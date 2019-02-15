@@ -1,0 +1,57 @@
+# Golang CircleCI 2.0 configuration file
+version: 2 # use CircleCI 2.0
+jobs: # basic units of work in a run
+  build: # runs not using Workflows must have a `build` job as entry point
+    docker: # run the steps with Docker
+      # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+      - image: circleci/golang:1.11 #
+
+    working_directory: /go/src/github.com/parkmenow/PMN-api
+
+    environment: # environment variables for primary container
+          GO111MODULE: "on"      
+
+    steps: # steps that comprise the `build` job
+      - checkout # check out source code to working directory
+
+
+
+      - run: go get -v -t -d ./...
+      - run: go test -race
+
+  deploy:
+    docker:
+      - image: circleci/golang:1.11
+    working_directory: /go/src/github.com/parkmenow/PMN-api
+    steps:
+      - checkout
+      - run: go get -u github.com/mitchellh/gox
+      - run: go get -u github.com/tcnksm/ghr
+      - run: go get -u github.com/stevenmatthewt/semantics
+      - run:
+          name: cross compile
+          command: |
+            gox -os="linux darwin windows" -arch="amd64" -output="dist/spotifycli_{{.OS}}_{{.Arch}}"
+            cd dist/ && gzip *
+      - run:
+          name: create release
+          command: |
+            tag=$(semantics --output-tag)
+            if [ "$tag" ]; then
+            # Don't understand what these are and how to set them yet???
+              ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME --replace $tag dist/
+            else
+              echo "The commit message(s) did not indicate a major/minor/patch version."
+            fi
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
