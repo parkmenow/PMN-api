@@ -84,3 +84,7 @@ type TimeSlots struct {
 	T12     uint
 	SpaceID uint
 }
+
+type UserList struct {
+	List []User `json:"users"`
+}
