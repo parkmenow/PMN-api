@@ -27,10 +27,7 @@ type User struct {
 	LName    string
 	UName    string
 	Email    string
-// 	Vehicles string
 	PhoneNo  string
-	Owner    Owner
-	Address  Address
 	Password string
 }
 

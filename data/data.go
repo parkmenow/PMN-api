@@ -10,6 +10,10 @@ var (
 	users models.UserList
 )
 
+func Users() *models.UserList  {
+	return &users
+}
+
 func UserRegistration(reqBody string) string {
 	user := models.User{}
 	json.Unmarshal([]byte(reqBody), &user)
