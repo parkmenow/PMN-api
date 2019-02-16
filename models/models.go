@@ -62,12 +62,13 @@ type Spot struct {
 	Type        int
 	ImageURL    string
 	Description string
-	TimeSlot    []TimeSlot
+	Slots       []Slot
 	PropertyID  uint
 }
 
-// TimeSlot holds the booking and avaialability details for each Space for one day 12hrs where T variables holds bookingID if booked
-type TimeSlot struct {
+// Slot holds the booking and avaialability details for each Space for one day 12hrs where T variables holds bookingID if booked
+//TODO: change data type of start and end time
+type Slot struct {
 	DBModel
 	StartTime string
 	EndTime   string
