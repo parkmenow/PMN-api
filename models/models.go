@@ -14,7 +14,7 @@ type DBModel struct {
 
 // Address represents one address
 type Address struct {
-	DBModel
+	//DBModel
 	Line1   string
 	Line2   string
 	Pincode string
@@ -26,19 +26,19 @@ type User struct {
 	FName    string
 	LName    string
 	UName    string
-	Email    string
-// 	Vehicles string
-	PhoneNo  string
-	Owner    Owner
-	Address  Address
 	Password string
+	Email    string
+	// 	Vehicles string
+	PhoneNo string
+	//Owner    Owner
+	Address
 }
 
 // Owner specifies if a User has parking space to sublet
 type Owner struct {
 	DBModel
 	Property []Property
-	UserID	  int
+	UserID   uint
 }
 
 // GpsLocation Location co-Ordinates fetched by API in terms of latitude and longitude
