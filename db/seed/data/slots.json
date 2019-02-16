@@ -1,0 +1,33 @@
+[
+    {
+        "StartTime" : "2019-02-17 04",
+        "EndTime" : "2019-02-17 05",
+        "Price" : 100,
+        "SpotID" : 1
+    },
+    {
+        "StartTime" : "2019-02-17 05",
+        "EndTime" : "2019-02-17 06",
+        "Price" : 100,
+        "SpotID" : 1
+    },
+    {
+        "StartTime" : "2019-02-17 04",
+        "EndTime" : "2019-02-17 05",
+        "Price" : 100,
+        "SpotID" : 3
+    },
+    {
+        "StartTime" : "2019-02-17 04",
+        "EndTime" : "2019-02-17 05",
+        "Price" : 100,
+        "SpotID" : 3
+    },
+    {
+        "StartTime" : "2019-02-17 04",
+        "EndTime" : "2019-03-17 05",
+        "Price" : 100,
+        "SpotID" : 4
+    }
+
+]

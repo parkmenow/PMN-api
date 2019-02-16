@@ -14,7 +14,7 @@ type DBModel struct {
 
 // Address represents one address
 type Address struct {
-	DBModel
+	//DBModel
 	Line1   string
 	Line2   string
 	Pincode string
@@ -26,61 +26,53 @@ type User struct {
 	FName    string
 	LName    string
 	UName    string
-	Email    string
-// 	Vehicles string
-	PhoneNo  string
-	Owner    Owner
-	Address  Address
 	Password string
+	Email    string
+	// 	Vehicles string
+	PhoneNo string
+	//Owner    Owner
+	Address
 }
 
 // Owner specifies if a User has parking space to sublet
 type Owner struct {
 	DBModel
 	Property []Property
-	UserID	  int
+	UserID   uint
 }
 
 // GpsLocation Location co-Ordinates fetched by API in terms of latitude and longitude
 type GpsLocation struct {
-	lat  string
-	long string
+	Lat  float64 `json:"lat"`
+	Long float64 `json:"long"`
 }
 
 // Property represents a single property owned by a owner
 type Property struct {
 	DBModel
-	Address      Address
-	Location     GpsLocation
-	OwnerID      uint
-	ParkingSpots []Space
+	Address
+	GpsLocation
+	Spots   []Spot
+	OwnerID uint
 }
 
-// Space represent individual parking pots that can be sublet
-type Space struct {
+// Spot represent individual parking pots that can be sublet
+type Spot struct {
 	DBModel
 	Type        int
-	Photos      string
+	ImageURL    string
 	Description string
-	Booking     []TimeSlots
+	Slots       []Slot
 	PropertyID  uint
-	PricePHr    uint
 }
 
-// TimeSlots holds the booking and avaialability details for each Space for one day 12hrs where T variables holds bookingID if booked
-type TimeSlots struct {
+// Slot holds the booking and avaialability details for each Space for one day 12hrs where T variables holds bookingID if booked
+//TODO: change data type of start and end time
+type Slot struct {
 	DBModel
-	T1      uint
-	T2      uint
-	T3      uint
-	T4      uint
-	T5      uint
-	T6      uint
-	T7      uint
-	T8      uint
-	T9      uint
-	T10     uint
-	T11     uint
-	T12     uint
-	SpaceID uint
+	StartTime string
+	EndTime   string
+	PricePHr  int
+	SpotID    uint
+	BookingID uint
 }

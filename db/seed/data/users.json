@@ -1,0 +1,46 @@
+[
+    {
+        "FName" : "Manas",
+        "LName" : "Agarwal",
+        "UName" : "test1",
+        "Password" : "test1",
+        "Email" : "test1@gmail.com",
+        "PhoneNo" : "123456789",
+        "Line1" : "1-5-4, 1108",
+        "Line2" : "Higashi-ojima",
+        "Pincode": "132-0034"
+    },
+    {
+        "FName" : "Prashant",
+        "LName" : "Maurya",
+        "UName" : "test2",
+        "Password" : "test2",
+        "Email" : "test2@gmail.com",
+        "PhoneNo" : "123456789",
+        "Line1" : "1-5-5, 1108",
+        "Line2" : "Higashi-ojima",
+        "Pincode": "132-0034"
+    },
+    {
+        "FName" : "Bharath",
+        "LName" : "Talakad",
+        "UName" : "test3",
+        "Password" : "test3",
+        "Email" : "test3@gmail.com",
+        "PhoneNo" : "123456789",
+        "Line1" : "1-5-6, 1108",
+        "Line2" : "Higashi-ojima",
+        "Pincode": "132-0034"
+    }, 
+    {
+        "FName" : "Subodh",
+        "LName" : "Pushkar",
+        "UName" : "test4",
+        "Password" : "test4",
+        "Email" : "test4@gmail.com",
+        "PhoneNo" : "123456789",
+        "Line1" : "1-5-7, 1108",
+        "Line2" : "Higashi-ojima",
+        "Pincode": "132-0034"
+    }
+]
