@@ -27,16 +27,18 @@ type User struct {
 	LName    string
 	UName    string
 	Email    string
-	Vehicles string
+// 	Vehicles string
 	PhoneNo  string
 	Owner    Owner
 	Address  Address
+	Password string
 }
 
 // Owner specifies if a User has parking space to sublet
 type Owner struct {
 	DBModel
 	Property []Property
+	UserID	  int
 }
 
 // GpsLocation Location co-Ordinates fetched by API in terms of latitude and longitude
@@ -58,7 +60,7 @@ type Property struct {
 type Space struct {
 	DBModel
 	Type        int
-	Photos      []strings
+	Photos      string
 	Description string
 	Booking     []TimeSlots
 	PropertyID  uint
