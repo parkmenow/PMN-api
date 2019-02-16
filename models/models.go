@@ -43,8 +43,8 @@ type Owner struct {
 
 // GpsLocation Location co-Ordinates fetched by API in terms of latitude and longitude
 type GpsLocation struct {
-	Lat float64 `json:"lat"`
-	Lng float64 `json:"lng"`
+	Lat  float64 `json:"lat"`
+	Long float64 `json:"long"`
 }
 
 // Property represents a single property owned by a owner
@@ -62,25 +62,16 @@ type Spot struct {
 	Type        int
 	ImageURL    string
 	Description string
-	Booking     []TimeSlot
+	TimeSlot    []TimeSlot
 	PropertyID  uint
-	PricePHr    int
 }
 
 // TimeSlot holds the booking and avaialability details for each Space for one day 12hrs where T variables holds bookingID if booked
 type TimeSlot struct {
 	DBModel
-	T1      uint
-	T2      uint
-	T3      uint
-	T4      uint
-	T5      uint
-	T6      uint
-	T7      uint
-	T8      uint
-	T9      uint
-	T10     uint
-	T11     uint
-	T12     uint
-	SpaceID uint
+	StartTime string
+	EndTime   string
+	PricePHr  int
+	SpotID    uint
+	BookingID uint
 }

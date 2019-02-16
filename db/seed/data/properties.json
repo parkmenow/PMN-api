@@ -4,7 +4,7 @@
         "Line2" : "Higashi-ojima",
         "Pincode": "132-0034",
         "lat": 35.68981,
-        "lng": 139.84755,
+        "long": 139.84755,
         "OwnerID": 3
     },
     {
@@ -12,7 +12,7 @@
         "Line2" : "Roppongi",
         "Pincode": "132-0034",
         "lat": 35.660736,
-        "lng": 139.72955,
+        "long": 139.72955,
         "OwnerID": 4
     },
     {
@@ -20,7 +20,7 @@
         "Line2" : "ojima",
         "Pincode": "132-0034",
         "lat": 35.883656,
-        "lng": 139.82832,
+        "long": 139.82832,
         "OwnerID": 3
     }
 ]

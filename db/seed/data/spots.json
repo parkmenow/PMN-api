@@ -1,0 +1,26 @@
+[
+    {
+        "Type" : 1,
+        "ImageURL": "https://www.archdaily.com/878629/simple-house-moon-hoon/59a4c624b22e389d3e0002a3-simple-house-moon-hoon-image",
+        "Description": "Very beautiful can park a cycle",
+        "PropertyID": 1
+    },
+    {
+        "Type" : 2,
+        "ImageURL": "https://www.archdaily.com/878629/simple-house-moon-hoon/59a4c624b22e389d3e0002a3-simple-house-moon-hoon-image",
+        "Description": "Very beautiful can park a car",
+        "PropertyID": 1
+    },
+    {
+        "Type" : 1,
+        "ImageURL": "https://www.archdaily.com/878629/simple-house-moon-hoon/59a4c624b22e389d3e0002a3-simple-house-moon-hoon-image",
+        "Description": "Very beautiful can park a cycle",
+        "PropertyID": 2
+    },
+    {
+        "Type" : 2,
+        "ImageURL": "https://www.archdaily.com/878629/simple-house-moon-hoon/59a4c624b22e389d3e0002a3-simple-house-moon-hoon-image",
+        "Description": "Very beautiful can park a car",
+        "PropertyID": 3
+    }
+]
