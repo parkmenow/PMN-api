@@ -9,11 +9,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 // CreateRouter creates and configures a server and returns a pointer a router with defined handles
-func CreateRouter() *gin.Engine {
+func CreateRouter(db *gorm.DB) *gin.Engine {
 	router := gin.Default()
+	router.Use(DB(db))
 	defineRoutes(router)
 	return router
 }

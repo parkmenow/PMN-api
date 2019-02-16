@@ -14,4 +14,4 @@
 # Ignore default auto generated files 
 .DS_Store
 .idea/
-pmn.db
+*.db
