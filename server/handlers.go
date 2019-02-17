@@ -3,6 +3,8 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+
+	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 
@@ -32,4 +34,15 @@ func userRegistration(c *gin.Context) {
 	db.Create(&newuser)
 
 	c.JSON(201, "User added successfully!")
+}
+
+func getUserFirstName(c *gin.Context) {
+	db := getDB(c)
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	fmt.Println(id)
+	var user models.User
+	db.Where("id = ?", id).First(&user)
+	fmt.Println(user)
+	c.JSON(200, user.FName)
 }
