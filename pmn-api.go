@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	database, err := gorm.Open("sqlite3", "pmn.db")
+	database, err := gorm.Open("sqlite3", "server/pmn.db")
 	if err != nil {
 		panic("failed to establish database connection")
 	}
