@@ -11,4 +11,5 @@ func defineRoutes(router *gin.Engine) {
 	// Initial version your API
 	v1 := router.Group("/api/v1")
 	v1.GET("/", getHello)
+	v1.POST("/signup", userRegistration)
 }
