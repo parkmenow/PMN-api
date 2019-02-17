@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"log"
 
 	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
@@ -43,7 +43,7 @@ func JWT() *jwt.GinJWTMiddleware {
 			}
 			db := getDB(c)
 			var user models.User
-			fmt.Println(loginVals)
+			log.Println(loginVals)
 			if err := db.Where(&models.User{UName: loginVals.Username}).First(&user).Error; err != nil {
 				return "", jwt.ErrFailedAuthentication
 			}
