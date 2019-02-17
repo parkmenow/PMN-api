@@ -3,7 +3,6 @@ package server_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 
@@ -79,24 +78,27 @@ var _ = Describe("Server", func() {
 		})
 	})
 
-	Describe("GET the /dashboard endpoint", func() {
-		BeforeEach(func() {
-			response = performRequest(router, "POST", "/login", jwt)
-		})
-		It("Returns with Status 200", func() {
-			Expect(response.Code).To(Equal(200))
-			fmt.Println(response.token)
-		})
-		// It("Returns ", func() {
-		// 	token := response.token
-		// 	var bearer = "Bearer " +
-		// 	newuser := models.User{}
-		// 	json.Unmarshal([]byte(jsonSignUp), &newuser)
-		// 	var user models.User
-		// 	db.Last(&user)
-		// 	Expect(newuser.UName).To(Equal(user.UName))
-		// })
-	})
+	// Describe("GET the /dashboard endpoint", func() {
+	// 	BeforeEach(func() {
+	// 		fmt.Println(jwt)
+	// 		response = performRequest(router, "POST", "/login", jwt)
+	// 		fmt.Println(response)
+	// 	})
+	// It("Returns with Status 200", func() {
+	// 	Expect(response.Code).To(Equal(200))
+	// 	fmt.Println("@@@@@@@@@@@@")
+	// 	fmt.Println(response)
+	// })
+	// It("Returns ", func() {
+	// 	token := response.token
+	// 	var bearer = "Bearer " +
+	// 	newuser := models.User{}
+	// 	json.Unmarshal([]byte(jsonSignUp), &newuser)
+	// 	var user models.User
+	// 	db.Last(&user)
+	// 	Expect(newuser.UName).To(Equal(user.UName))
+	// })
+	// })
 
 })
 
@@ -115,6 +117,6 @@ var jsonSignUp = `{
 
 // user's credential for login
 var jwt = `{
-	"u_name": "test1",
-	"password": "test1"
+	"UName": "test1",
+	"Password": "test1"
 }`
