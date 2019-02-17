@@ -2,7 +2,6 @@ package server_test
 
 import (
 	"bytes"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 
@@ -12,7 +11,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/parkmenow/PMN-api/models"
 	. "github.com/parkmenow/PMN-api/server"
 )
 
@@ -61,45 +59,6 @@ var _ = Describe("Server", func() {
 			})
 		})
 	})
-
-	Describe("POST the /signup endpoint", func() {
-		BeforeEach(func() {
-			response = performRequest(router, "POST", "/api/v1/signup", jsonSignUp)
-		})
-		It("Returns with Status 201", func() {
-			Expect(response.Code).To(Equal(201))
-		})
-		It("Added a new User", func() {
-			newuser := models.User{}
-			json.Unmarshal([]byte(jsonSignUp), &newuser)
-			var user models.User
-			db.Last(&user)
-			Expect(newuser.UName).To(Equal(user.UName))
-		})
-	})
-
-	// Describe("GET the /dashboard endpoint", func() {
-	// 	BeforeEach(func() {
-	// 		fmt.Println(jwt)
-	// 		response = performRequest(router, "POST", "/login", jwt)
-	// 		fmt.Println(response)
-	// 	})
-	// It("Returns with Status 200", func() {
-	// 	Expect(response.Code).To(Equal(200))
-	// 	fmt.Println("@@@@@@@@@@@@")
-	// 	fmt.Println(response)
-	// })
-	// It("Returns ", func() {
-	// 	token := response.token
-	// 	var bearer = "Bearer " +
-	// 	newuser := models.User{}
-	// 	json.Unmarshal([]byte(jsonSignUp), &newuser)
-	// 	var user models.User
-	// 	db.Last(&user)
-	// 	Expect(newuser.UName).To(Equal(user.UName))
-	// })
-	// })
-
 })
 
 // sign up user testing
@@ -113,10 +72,4 @@ var jsonSignUp = `{
 	"Line1" : "1-5-5, 1108",
 	"Line2" : "Higashi-ojima",
 	"Pincode": "132-0034"
-}`
-
-// user's credential for login
-var jwt = `{
-	"UName": "test1",
-	"Password": "test1"
 }`

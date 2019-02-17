@@ -26,7 +26,6 @@ func userRegistration(c *gin.Context) {
 	num, _ := c.Request.Body.Read(buf)
 	reqBody := string(buf[0:num])
 
-	fmt.Println(num)
 	db := getDB(c)
 	var newuser models.User
 
@@ -46,3 +45,4 @@ func getUserFirstName(c *gin.Context) {
 	fmt.Println(user)
 	c.JSON(200, user.FName)
 }
+
