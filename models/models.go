@@ -25,8 +25,8 @@ type User struct {
 	DBModel
 	FName    string
 	LName    string
-	UName    string
-	Password string
+	UName    string `gorm:"type:varchar(40); not null`
+	Password string `gorm:"type:varchar(40); not null`
 	Email    string
 	// 	Vehicles string
 	PhoneNo string
