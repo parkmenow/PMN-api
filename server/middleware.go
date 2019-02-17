@@ -6,6 +6,8 @@ import (
 	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"log"
+	
 	"github.com/parkmenow/PMN-api/constants"
 	"github.com/parkmenow/PMN-api/models"
 )
@@ -43,7 +45,7 @@ func JWT() *jwt.GinJWTMiddleware {
 			}
 			db := getDB(c)
 			var user models.User
-			fmt.Println(loginVals)
+			logger.Print(loginVals)
 			if err := db.Where(&models.User{UName: loginVals.Username}).First(&user).Error; err != nil {
 				return "", jwt.ErrFailedAuthentication
 			}
