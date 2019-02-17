@@ -72,7 +72,15 @@ type Slot struct {
 	DBModel
 	StartTime string
 	EndTime   string
-	PricePHr  int
+	Price     int
 	SpotID    uint
 	BookingID uint
+}
+
+//SearchInput is the input details from user to search parking spots
+type SearchInput struct {
+	Type      int
+	StartTime string
+	EndTime   string
+	GpsLocation
 }

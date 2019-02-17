@@ -1,31 +1,37 @@
 [
     {
-        "StartTime" : "2019-02-17 04",
-        "EndTime" : "2019-02-17 05",
+        "StartTime" : "2019-02-17 13:00",
+        "EndTime" : "2019-02-17 14:00",
         "Price" : 100,
         "SpotID" : 1
     },
     {
-        "StartTime" : "2019-02-17 05",
-        "EndTime" : "2019-02-17 06",
+        "StartTime" : "2019-02-17 14:00",
+        "EndTime" : "2019-02-17 15:00",
         "Price" : 100,
         "SpotID" : 1
     },
     {
-        "StartTime" : "2019-02-17 04",
-        "EndTime" : "2019-02-17 05",
+        "StartTime" : "2019-02-17 16:00",
+        "EndTime" : "2019-02-17 17:00",
+        "Price" : 100,
+        "SpotID" : 1
+    },
+    {
+        "StartTime" : "2019-02-17 13:00",
+        "EndTime" : "2019-02-17 14:00",
         "Price" : 100,
         "SpotID" : 3
     },
     {
-        "StartTime" : "2019-02-17 04",
-        "EndTime" : "2019-02-17 05",
+        "StartTime" : "2019-02-17 16:00",
+        "EndTime" : "2019-02-17 17:00",
         "Price" : 100,
         "SpotID" : 3
     },
     {
-        "StartTime" : "2019-02-17 04",
-        "EndTime" : "2019-03-17 05",
+        "StartTime" : "2019-02-17 15:00",
+        "EndTime" : "2019-02-17 16:00",
         "Price" : 100,
         "SpotID" : 4
     }
