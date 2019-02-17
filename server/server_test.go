@@ -2,7 +2,6 @@ package server_test
 
 import (
 	"bytes"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 
@@ -12,7 +11,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/parkmenow/PMN-api/models"
 	. "github.com/parkmenow/PMN-api/server"
 )
 
@@ -61,23 +59,6 @@ var _ = Describe("Server", func() {
 			})
 		})
 	})
-
-	Describe("POST the /signup endpoint", func() {
-		BeforeEach(func() {
-			response = performRequest(router, "POST", "/api/v1/signup", jsonSignUp)
-		})
-		It("Returns with Status 201", func() {
-			Expect(response.Code).To(Equal(201))
-		})
-		It("Added a new User", func() {
-			newuser := models.User{}
-			json.Unmarshal([]byte(jsonSignUp), &newuser)
-			var user models.User
-			db.Last(&user)
-			Expect(newuser.UName).To(Equal(user.UName))
-		})
-	})
-
 })
 
 // sign up user testing

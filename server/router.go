@@ -13,4 +13,8 @@ func defineRoutes(router *gin.Engine) {
 	v1 := router.Group("/api/v1")
 
 	v1.POST("/signup", userRegistration)
+	user := router.Group("/dashboard")
+	user.Use(authMiddleware.MiddlewareFunc())
+	user.GET("/", getUserFirstName)
+
 }
