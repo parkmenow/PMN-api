@@ -22,8 +22,12 @@ func CreateRouter(db *gorm.DB) *gin.Engine {
 
 // StartServer starts given server
 func StartServer(router *gin.Engine) {
+
+	// Get the port to bind server using ENV variable
+	var port = os.Getenv("PORT")
+	log.Printf("Starting server on port: %s", port)
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":" + port,
 		Handler: router,
 	}
 	// Starts a go routine to start the server
