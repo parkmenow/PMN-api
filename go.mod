@@ -1,6 +1,7 @@
 module github.com/parkmenow/PMN-api
 
 require (
+	github.com/appleboy/gin-jwt v2.5.0+incompatible
 	github.com/gin-contrib/sse v0.0.0-20190125020943-a7658810eb74 // indirect
 	github.com/gin-gonic/gin v1.3.0
 	github.com/jinzhu/gorm v1.9.2
@@ -10,5 +11,6 @@ require (
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
 	github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43 // indirect
+	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 )
