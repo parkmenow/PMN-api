@@ -118,3 +118,31 @@ func regParkingSpot(c *gin.Context) {
 	c.JSON(201, "Listed a new parking Spot Successfully!")
 
 }
+
+func regSpot(c *gin.Context) {
+	var spot models.Spot
+
+	db := getDB(c)
+	c.BindJSON(&spot)
+	db.Create(&spot)
+	c.JSON(200, "Successfully Added Spot")
+}
+
+func regSlot(c *gin.Context) {
+	var slot models.Slot
+
+	db := getDB(c)
+	c.BindJSON(&slot)
+	db.Create(&slot)
+	c.JSON(200, "Successfully Added Slot")
+}
+
+func modifySpot(c *gin.Context) {
+	var spot models.Spot
+	var modSpot models.Spot
+	db := getDB(c)
+	c.BindJSON(&modSpot)
+	fmt.Println(modSpot)
+	db.Where("id = ?", modSpot.ID).First(&spot).Update(&modSpot)
+	c.JSON(200, "Successfully Modified Spot")
+}
