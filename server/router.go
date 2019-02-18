@@ -17,11 +17,11 @@ func defineRoutes(router *gin.Engine) {
 
 	user.Use(authMiddleware.MiddlewareFunc())
 	user.GET("/", getUserFirstName)
-	user.Use(authMiddleware.MiddlewareFunc())
+	user.GET("/mylisting", mylisting)
 	user.POST("/parkmenow", fetchParkingSpots)
 	user.POST("/regparking", regParkingSpot)
 	user.POST("/regSpot", regSpot)
 	user.POST("/regSlot", regSlot)
 	user.PATCH("/payment", payment)
-
+	user.PATCH("/modifySpot", modifySpot)
 }

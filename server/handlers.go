@@ -37,6 +37,18 @@ func getUserFirstName(c *gin.Context) {
 	c.JSON(200, user.FName)
 }
 
+func mylisting(c *gin.Context) {
+	db := getDB(c)
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	var owner models.Owner
+	db.Where("user_id = ?", id).First(&owner)
+	fmt.Println(owner.ID)
+	var properties []models.Property
+	db.Preload("Spots").Preload("Spots.Slots").Where("owner_id = ?", owner.ID).Find(&properties)
+	c.JSON(200, properties)
+}
+
 //fetch parking spots. We are assuming that you can book parking for 1hour only.
 func fetchParkingSpots(c *gin.Context) {
 	var searchInput models.SearchInput
@@ -135,6 +147,7 @@ func regSlot(c *gin.Context) {
 	c.JSON(200, "Successfully Added Slot")
 }
 
+
 func payment(c *gin.Context) {
 	var input struct {
 		Owner  uint
@@ -179,4 +192,15 @@ func payment(c *gin.Context) {
 	db.Save(&owner)
 
 	c.JSON(202, "Booked Successfully!")
+}
+
+func modifySpot(c *gin.Context) {
+	var spot models.Spot
+	var modSpot models.Spot
+	db := getDB(c)
+	c.BindJSON(&modSpot)
+	fmt.Println(modSpot)
+	db.Where("id = ?", modSpot.ID).First(&spot).Update(&modSpot)
+	c.JSON(200, "Successfully Modified Spot")
+
 }
