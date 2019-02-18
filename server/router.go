@@ -14,10 +14,14 @@ func defineRoutes(router *gin.Engine) {
 
 	v1.POST("/signup", userRegistration)
 	user := router.Group("/dashboard")
-	{
-		user.Use(authMiddleware.MiddlewareFunc())
-		user.GET("/", getUserFirstName)
-		user.POST("/regparking", regParkingSpot)
-		user.POST("/payment", paymentHandler)
-	}
+
+	user.Use(authMiddleware.MiddlewareFunc())
+	user.GET("/", getUserFirstName)
+	user.Use(authMiddleware.MiddlewareFunc())
+	user.POST("/parkmenow", fetchParkingSpots)
+	user.POST("/regparking", regParkingSpot)
+	user.POST("/regSpot", regSpot)
+	user.POST("/regSlot", regSlot)
+	user.POST("/payment", paymentHandler)
+
 }

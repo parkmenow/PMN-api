@@ -25,6 +25,9 @@ func StartServer(router *gin.Engine) {
 
 	// Get the port to bind server using ENV variable
 	var port = os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	log.Printf("Starting server on port: %s", port)
 	srv := &http.Server{
 		Addr:    ":" + port,
