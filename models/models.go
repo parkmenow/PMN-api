@@ -30,7 +30,6 @@ type User struct {
 	Email    string
 	// 	Vehicles string
 	PhoneNo string
-	//Owner    Owner
 	Address
 }
 
