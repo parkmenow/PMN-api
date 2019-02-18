@@ -136,3 +136,13 @@ func regSlot(c *gin.Context) {
 	db.Create(&slot)
 	c.JSON(200, "Successfully Added Slot")
 }
+
+func modifySpot(c *gin.Context) {
+	var spot models.Spot
+	var modSpot models.Spot
+	db := getDB(c)
+	c.BindJSON(&modSpot)
+	fmt.Println(modSpot)
+	db.Where("id = ?", modSpot.ID).First(&spot).Update(&modSpot)
+	c.JSON(200, "Successfully Modified Spot")
+}
