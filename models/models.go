@@ -31,7 +31,6 @@ type User struct {
 	// 	Vehicles string
 	PhoneNo string
 	Address
-	Wallet int64
 }
 
 // Owner specifies if a User has parking space to sublet
@@ -39,6 +38,7 @@ type Owner struct {
 	DBModel
 	Property []Property
 	UserID   uint
+	Wallet int64
 }
 
 // GpsLocation Location co-Ordinates fetched by API in terms of latitude and longitude
@@ -74,7 +74,7 @@ type Slot struct {
 	EndTime   time.Time `gorm:"type:datetime"`
 	Price     int
 	SpotID    uint
-	BookingID uint
+	Availabile bool
 }
 
 //SearchInput is the input details from user to search parking spots

@@ -150,11 +150,20 @@ func payment(c *gin.Context) {
 	var user models.User
 	db.Where("id = ?", id).First(&user)
 
-	if paymentHandler(input.Price, user.Email, input.Token) == false {
-		//Take better care of this
-		log.Print("Payment Failed!!!!")
+	var fail, failmsg = paymentHandler(input.Price, user.Email, input.Token)
+	if fail == false {
+		log.Print(failmsg)
+		c.JSON(401, failmsg)
+		return
 	}
 
+	// Since the payment is successful, Slot is no more available
+	var slot models.Slot
+	db.Where("id = ?", input.SlotID).First(&slot)
+	slot.Availabile = false
+	db.Save(slot)
+
+	// Creating the booking record
 	newBooking := models.Booking{
 		Booker: user.ID,
 		OwnerID:  input.Owner,
@@ -162,7 +171,12 @@ func payment(c *gin.Context) {
 		Price:  input.Price,
 	}
 	db.Create(&newBooking)
-	user.Wallet = user.Wallet + input.Price
 
-	c.JSON(200, "Booked Successfully!")
+	// Giving points to the Owner
+	var owner models.Owner
+	db.Where("user_id = ?",input.Owner).First(&owner)
+	owner.Wallet = owner.Wallet + input.Price
+	db.Save(&owner)
+
+	c.JSON(202, "Booked Successfully!")
 }

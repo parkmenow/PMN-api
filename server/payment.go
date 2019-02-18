@@ -3,26 +3,23 @@ package server
 import (
 	"log"
 	"os"
-	
+
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/charge"
 )
 
-func paymentHandler(p int64, email string, token string) bool {
+func paymentHandler(price int64, email string, token string) (bool, string) {
 
 	//export SecretKey="sk_test_1pSlxntEQATjsOv5HLI49FaW"
 	var sh_key = os.Getenv("SecretKey")
 	stripe.Key = sh_key
 
 	params := &stripe.ChargeParams{
-		Amount:   stripe.Int64(p),
-		Currency: stripe.String(string(stripe.CurrencyJPY)),
-		ReceiptEmail:stripe.String(email),
+		Amount:       stripe.Int64(price),
+		Currency:     stripe.String(string(stripe.CurrencyJPY)),
+		ReceiptEmail: stripe.String(email),
 	}
-
-	//Add the token here
-	params.SetSource("tok_mastercard")
-	//params.SetSource(input.Token)
+	params.SetSource(token)
 
 	ch, err := charge.New(params)
 
@@ -31,5 +28,5 @@ func paymentHandler(p int64, email string, token string) bool {
 	}
 
 	log.Printf("%v\n", ch.ID)
-	return ch.Paid
+	return ch.Paid,ch.FailureMessage
 }

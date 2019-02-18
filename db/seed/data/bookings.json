@@ -4,5 +4,11 @@
     "OwnerID": 2,
     "SlotID": 3,
     "Price": 440
+  },
+  {
+    "Booker": 3,
+    "OwnerID": 1,
+    "SlotID": 1,
+    "Price": 200
   }
 ]
