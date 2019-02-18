@@ -7,11 +7,7 @@ import (
 	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> ac56f02b8cb2a7661d1d335ca28002d5a13ad2fb
 	"github.com/parkmenow/PMN-api/constants"
 	"github.com/parkmenow/PMN-api/models"
 )
@@ -44,10 +40,6 @@ func getUserFirstName(c *gin.Context) {
 	c.JSON(200, user.FName)
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> ac56f02b8cb2a7661d1d335ca28002d5a13ad2fb
 //fetch parking spots. We are assuming that you can book parking for 1hour only.
 func fetchParkingSpots(c *gin.Context) {
 	var searchInput models.SearchInput
@@ -71,6 +63,7 @@ func fetchParkingSpots(c *gin.Context) {
 		}
 	}
 	c.JSON(200, results)
+}
 
 func regParkingSpot(c *gin.Context) {
 	db := getDB(c)
