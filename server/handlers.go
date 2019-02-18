@@ -1,20 +1,13 @@
 package server
 
 import (
-
 	"fmt"
-
-	jwt "github.com/appleboy/gin-jwt"
-
+	"github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-
 	"github.com/parkmenow/PMN-api/constants"
 	"github.com/parkmenow/PMN-api/models"
-	"github.com/stripe/stripe-go"
-	"github.com/stripe/stripe-go/charge"
 	"log"
-	"os"
 )
 
 // getHello defines the endpoint for initial test
@@ -142,33 +135,34 @@ func regSlot(c *gin.Context) {
 	c.JSON(200, "Successfully Added Slot")
 }
 
-func paymentHandler(c *gin.Context) {
-	var input struct {       //to be added in ther amount
-		PropertyID uint
-		Price int64
-		Token string
+func payment(c *gin.Context) {
+	var input struct {
+		Owner  uint
+		SlotID uint
+		Price  int64
+		Token  string
 	}
 	c.BindJSON(&input)
 
-	//export SecretKey="sk_test_1pSlxntEQATjsOv5HLI49FaW"
-	var sh_key = os.Getenv("SecretKey")
-	stripe.Key = sh_key
+	db := getDB(c)
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	var user models.User
+	db.Where("id = ?", id).First(&user)
 
-	params := &stripe.ChargeParams{
-		Amount:   stripe.Int64(input.Price),
-		Currency: stripe.String(string(stripe.CurrencyJPY)),
+	if paymentHandler(input.Price, user.Email, input.Token) == false {
+		//Take better care of this
+		log.Print("Payment Failed!!!!")
 	}
 
-	//Add the token here
-	params.SetSource("tok_mastercard")
-	//params.SetSource(input.Token)
-
-	ch, err := charge.New(params)
-
-	if err != nil {
-		log.Fatal(err)
+	newBooking := models.Booking{
+		Booker: user.ID,
+		OwnerID:  input.Owner,
+		SlotID: input.SlotID,
+		Price:  input.Price,
 	}
+	db.Create(&newBooking)
+	user.Wallet = user.Wallet + input.Price
 
-	log.Printf("%v\n", ch.ID)
-	c.JSON(200, "Payment Successful")
+	c.JSON(200, "Booked Successfully!")
 }

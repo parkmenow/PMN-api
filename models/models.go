@@ -31,7 +31,7 @@ type User struct {
 	// 	Vehicles string
 	PhoneNo string
 	Address
-	// Wallet float64
+	Wallet int64
 }
 
 // Owner specifies if a User has parking space to sublet
@@ -83,4 +83,12 @@ type SearchInput struct {
 	StartTime time.Time `gorm:"type:datetime"`
 	EndTime   time.Time `gorm:"type:datetime"`
 	GpsLocation
+}
+
+type Booking struct{
+	DBModel
+	Booker uint
+	OwnerID uint
+	SlotID uint
+	Price int64
 }

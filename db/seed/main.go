@@ -18,10 +18,12 @@ func main() {
 	var properties []models.Property
 	var spots []models.Spot
 	var slots []models.Slot
+	var booking models.Booking
 	getData("data/users.json", &users)
 	getData("data/owners.json", &owners)
 	getData("data/properties.json", &properties)
 	getData("data/spots.json", &spots)
+	getData("data/slots.json", &slots)
 	getData("data/slots.json", &slots)
 	database, err := gorm.Open("sqlite3", "pmn.db")
 	if err != nil {
@@ -45,7 +47,9 @@ func main() {
 	for _, slot := range slots {
 		db.DB.Create(&slot)
 	}
+	db.DB.Create(&booking)
 	println("Done, copy pmn.db to root folder")
+
 }
 
 func getData(fileName string, v interface{}) {
