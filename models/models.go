@@ -69,9 +69,17 @@ type Spot struct {
 //TODO: change data type of start and end time
 type Slot struct {
 	DBModel
-	StartTime string
-	EndTime   string
-	PricePHr  int
+	StartTime time.Time `gorm:"type:datetime"`
+	EndTime   time.Time `gorm:"type:datetime"`
+	Price     int
 	SpotID    uint
 	BookingID uint
+}
+
+//SearchInput is the input details from user to search parking spots
+type SearchInput struct {
+	Type      int
+	StartTime time.Time `gorm:"type:datetime"`
+	EndTime   time.Time `gorm:"type:datetime"`
+	GpsLocation
 }
