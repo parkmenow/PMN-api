@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
@@ -44,50 +43,54 @@ func getUserFirstName(c *gin.Context) {
 func fetchParkingSpots(c *gin.Context) {
 	var searchInput models.SearchInput
 	c.BindJSON(&searchInput)
+
+	db := getDB(c)
+
+	var properties []models.Property
+	fmt.Println(searchInput.StartTime)
+	db.Preload("Spots", "type = ?", searchInput.Type).Preload("Spots.Slots", "start_time = ?", searchInput.StartTime).Find(&properties)
+
 	//fmt.Println(searchInput)
-	layout := "2006-01-02T15:04:05.000Z"
-	str := searchInput.StartTime[0:10] + "T" + searchInput.StartTime[11:] + ":00.000Z"
-	startTime, _ := time.Parse(layout, str)
+	// layout := "2006-01-02T15:04:05.000Z"
+	// str := searchInput.StartTime[0:10] + "T" + searchInput.StartTime[11:] + ":00.000Z"
+	// startTime, _ := time.Parse(layout, str)
 	// str = searchInput.EndTime[0:10] + "T" + searchInput.EndTime[11:] + ":00.000Z"
 	// endTime, _ := time.Parse(layout, str)
-	db := getDB(c)
-	var results []models.Spot
-
-	var spots []models.Spot
-	db.Preload("Slots").Where("type = ?", searchInput.Type).Find(&spots)
-	var b bool
-	for _, sp := range spots {
-		b = false
-		var r []models.Slot
-		for _, s := range sp.Slots {
-			str := s.StartTime[0:10] + "T" + s.StartTime[11:] + ":00.000Z"
-			fmt.Println(str)
-			st, _ := time.Parse(layout, str)
-			if st == startTime {
-				b = true
-				r = append(r, s)
-			}
-		}
-		if b {
-			var result models.Spot
-			result.Type = sp.Type
-			result.DBModel = sp.DBModel
-			result.ImageURL = sp.ImageURL
-			result.Description = sp.Description
-			result.PropertyID = sp.PropertyID
-			result.Slots = r
-			results = append(results, result)
-		}
-
-	}
-	var properties []models.Property
-	for _, res := range results {
-		var property models.Property
-		db.Where("id = ?", res.PropertyID).Find(&property)
-		property.Spots = append(property.Spots, res)
-		properties = append(properties, property)
-	}
-
+	// var results []models.Spot
+	// "start_time = ?", searchInput.StartTime
+	// var spots []models.Spot
+	// db.Preload("Slots").Where("type = ?", searchInput.Type).Find(&spots)
+	// var b bool
+	// for _, sp := range spots {
+	// 	b = false
+	// 	var r []models.Slot
+	// 	for _, s := range sp.Slots {
+	// 		str := s.StartTime[0:10] + "T" + s.StartTime[11:] + ":00.000Z"
+	// 		fmt.Println(str)
+	// 		st, _ := time.Parse(layout, str)
+	// 		if st == startTime {
+	// 			b = true
+	// 			r = append(r, s)
+	// 		}
+	// 	}
+	// 	if b {
+	// 		var result models.Spot
+	// 		result.Type = sp.Type
+	// 		result.DBModel = sp.DBModel
+	// 		result.ImageURL = sp.ImageURL
+	// 		result.Description = sp.Description
+	// 		result.PropertyID = sp.PropertyID
+	// 		result.Slots = r
+	// 		results = append(results, result)
+	// 	}
+	// }
+	// var properties []models.Property
+	// for _, res := range results {
+	// 	var property models.Property
+	// 	db.Where("id = ?", res.PropertyID).Find(&property)
+	// 	property.Spots = append(property.Spots, res)
+	// 	properties = append(properties, property)
+	// }
 	//fmt.Println(results)
 	c.JSON(200, properties)
 }
