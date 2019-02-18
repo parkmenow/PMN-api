@@ -64,6 +64,7 @@ func fetchParkingSpots(c *gin.Context) {
 		}
 	}
 	c.JSON(200, results)
+}
 
 func regParkingSpot(c *gin.Context) {
 	db := getDB(c)
