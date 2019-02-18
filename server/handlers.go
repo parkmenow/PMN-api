@@ -5,7 +5,6 @@ import (
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
-	"github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
   
