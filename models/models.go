@@ -76,4 +76,3 @@ type Slot struct {
 	SpotID    uint
 	BookingID uint
 }
-

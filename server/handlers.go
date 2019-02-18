@@ -64,8 +64,9 @@ func regParkingSpot(c *gin.Context) {
 
 func paymentHandler(c *gin.Context) {
 	var input struct {       //to be added in ther amount
+		PropertyID uint
 		Price int64
-
+		Token string
 	}
 	c.BindJSON(&input)
 
@@ -78,8 +79,9 @@ func paymentHandler(c *gin.Context) {
 		Currency: stripe.String(string(stripe.CurrencyJPY)),
 	}
 
-	params.SetSource("tok_visa")
-	params.AddMetadata("key", "value")
+	//Add the token here
+	params.SetSource("tok_mastercard")
+	//params.SetSource(input.Token)
 
 	ch, err := charge.New(params)
 
