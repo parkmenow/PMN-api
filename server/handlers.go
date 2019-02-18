@@ -1,14 +1,14 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
+	"github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-
+  
 	"github.com/parkmenow/PMN-api/constants"
 	"github.com/parkmenow/PMN-api/models"
 )
@@ -23,15 +23,10 @@ func getDB(c *gin.Context) *gorm.DB {
 }
 
 func userRegistration(c *gin.Context) {
-	buf := make([]byte, 1024)
-	num, _ := c.Request.Body.Read(buf)
-	reqBody := string(buf[0:num])
-
-	fmt.Println(num)
 	db := getDB(c)
 	var newuser models.User
-
-	json.Unmarshal([]byte(reqBody), &newuser)
+	c.BindJSON(&newuser)
+	fmt.Println(newuser)
 	db.Create(&newuser)
 
 	c.JSON(201, "User added successfully!")
@@ -41,12 +36,11 @@ func getUserFirstName(c *gin.Context) {
 	db := getDB(c)
 	claims := jwt.ExtractClaims(c)
 	id := claims["id"]
-	fmt.Println(id)
 	var user models.User
 	db.Where("id = ?", id).First(&user)
-	fmt.Println(user)
 	c.JSON(200, user.FName)
 }
+
 
 //fetch parking spots. We are assuming that you can book parking for 1hour only.
 func fetchParkingSpots(c *gin.Context) {
@@ -71,4 +65,27 @@ func fetchParkingSpots(c *gin.Context) {
 		}
 	}
 	c.JSON(200, results)
+
+func regParkingSpot(c *gin.Context) {
+	db := getDB(c)
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+
+	var owner models.Owner
+	db.Where("user_id = ?", id).First(&owner)
+
+	var property models.Property
+	c.BindJSON(&property)
+
+	if owner.UserID == 0 {
+		owner.Property = append(owner.Property, property)
+		owner.UserID = uint(id.(float64))
+		db.Create(&owner)
+	} else {
+		owner.Property = append(owner.Property, property)
+		db.Save(&owner)
+	}
+
+	c.JSON(201, "Listed a new parking Spot Successfully!")
+
 }
