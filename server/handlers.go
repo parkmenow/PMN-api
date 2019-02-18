@@ -1,12 +1,15 @@
 package server
 
 import (
-	"fmt"
 	"github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/parkmenow/PMN-api/constants"
 	"github.com/parkmenow/PMN-api/models"
+	"github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/charge"
+	"log"
+	"os"
 )
 
 // getHello defines the endpoint for initial test
@@ -22,7 +25,6 @@ func userRegistration(c *gin.Context) {
 	db := getDB(c)
 	var newuser models.User
 	c.BindJSON(&newuser)
-	fmt.Println(newuser)
 	db.Create(&newuser)
 
 	c.JSON(201, "User added successfully!")
@@ -58,4 +60,33 @@ func regParkingSpot(c *gin.Context) {
 	}
 
 	c.JSON(201, "Listed a new parking Spot Successfully!")
+}
+
+func paymentHandler(c *gin.Context) {
+	var input struct {       //to be added in ther amount
+		Price int64
+
+	}
+	c.BindJSON(&input)
+
+	//export SecretKey="sk_test_1pSlxntEQATjsOv5HLI49FaW"
+	var sh_key = os.Getenv("SecretKey")
+	stripe.Key = sh_key
+
+	params := &stripe.ChargeParams{
+		Amount:   stripe.Int64(input.Price),
+		Currency: stripe.String(string(stripe.CurrencyJPY)),
+	}
+
+	params.SetSource("tok_visa")
+	params.AddMetadata("key", "value")
+
+	ch, err := charge.New(params)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("%v\n", ch.ID)
+	c.JSON(200, "Payment Successful")
 }

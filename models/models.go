@@ -31,6 +31,7 @@ type User struct {
 	// 	Vehicles string
 	PhoneNo string
 	Address
+	// Wallet float64
 }
 
 // Owner specifies if a User has parking space to sublet
@@ -75,3 +76,4 @@ type Slot struct {
 	SpotID    uint
 	BookingID uint
 }
+
