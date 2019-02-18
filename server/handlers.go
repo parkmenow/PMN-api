@@ -51,18 +51,45 @@ func fetchParkingSpots(c *gin.Context) {
 	// str = searchInput.EndTime[0:10] + "T" + searchInput.EndTime[11:] + ":00.000Z"
 	// endTime, _ := time.Parse(layout, str)
 	db := getDB(c)
-	var results []models.Slot
-	var slots []models.Slot
-	db.Find(&slots)
-	for _, s := range slots {
-		// fmt.Println(s.StartTime)
-		str := s.StartTime[0:10] + "T" + s.StartTime[11:] + ":00.000Z"
-		st, _ := time.Parse(layout, str)
-		if st == startTime {
-			results = append(results, s)
+	var results []models.Spot
+
+	var spots []models.Spot
+	db.Preload("Slots").Where("type = ?", searchInput.Type).Find(&spots)
+	var b bool
+	for _, sp := range spots {
+		b = false
+		var r []models.Slot
+		for _, s := range sp.Slots {
+			str := s.StartTime[0:10] + "T" + s.StartTime[11:] + ":00.000Z"
+			fmt.Println(str)
+			st, _ := time.Parse(layout, str)
+			if st == startTime {
+				b = true
+				r = append(r, s)
+			}
 		}
+		if b {
+			var result models.Spot
+			result.Type = sp.Type
+			result.DBModel = sp.DBModel
+			result.ImageURL = sp.ImageURL
+			result.Description = sp.Description
+			result.PropertyID = sp.PropertyID
+			result.Slots = r
+			results = append(results, result)
+		}
+
 	}
-	c.JSON(200, results)
+	var properties []models.Property
+	for _, res := range results {
+		var property models.Property
+		db.Where("id = ?", res.PropertyID).Find(&property)
+		property.Spots = append(property.Spots, res)
+		properties = append(properties, property)
+	}
+
+	//fmt.Println(results)
+	c.JSON(200, properties)
 }
 
 func regParkingSpot(c *gin.Context) {
