@@ -20,7 +20,7 @@ func defineRoutes(router *gin.Engine) {
 	user.POST("/:id/parkmenow", fetchParkingSpots)
 	user.POST("/:id/regparking", regParkingSpot)
 	user.POST("/:id/regparking/regSpot/:spot_id", regSpot)
-	user.POST("/:id/regparking/regSpot/regSlot/:slot_id", regSlot)
+	user.POST("/:id/regparking/regSpot/:spot_id/regSlot/:slot_id", regSlot)
 	user.PATCH("/:id/listings/modifySpot", modifySpot)
 
 }
