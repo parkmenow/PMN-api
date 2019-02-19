@@ -22,4 +22,5 @@ func defineRoutes(router *gin.Engine) {
 	user.POST("/:id/regparking/regSpot/:spot_id", regSpot)
 	user.POST("/:id/regparking/regSpot/regSlot/:slot_id", regSlot)
 	user.PATCH("/:id/listings/modifySpot", modifySpot)
+
 }
