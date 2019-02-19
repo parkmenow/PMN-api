@@ -28,5 +28,5 @@ func paymentHandler(price int64, email string, token string) (bool, string) {
 	}
 
 	log.Printf("%v\n", ch.ID)
-	return ch.Paid,ch.FailureMessage
+	return ch.Paid, ch.FailureMessage
 }

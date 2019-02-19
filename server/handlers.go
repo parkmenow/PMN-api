@@ -147,7 +147,6 @@ func regSlot(c *gin.Context) {
 	c.JSON(200, "Successfully Added Slot")
 }
 
-
 // UserB pays UserA
 func payment(c *gin.Context) {
 	var input struct {
@@ -184,18 +183,18 @@ func payment(c *gin.Context) {
 
 	// Creating the booking record
 	newBooking := models.Booking{
-		UserID: userB.ID,
-		OwnerID:  property.OwnerID,
-		SlotID: input.SlotID,
-		Price:  input.Price,
+		UserID:  userB.ID,
+		OwnerID: property.OwnerID,
+		SlotID:  input.SlotID,
+		Price:   input.Price,
 	}
 	db.Create(&newBooking)
 
 	// Giving points to the User A
 	var owner models.Owner
-	db.Where("id = ?",property.OwnerID).First(&owner)
+	db.Where("id = ?", property.OwnerID).First(&owner)
 	var userA models.User
-	db.Where("id = ?",owner.UserID).First(&userA)
+	db.Where("id = ?", owner.UserID).First(&userA)
 	userA.Wallet = userA.Wallet + input.Price
 	db.Save(&owner)
 

@@ -30,7 +30,7 @@ type User struct {
 	Email    string
 	// 	Vehicles string
 	PhoneNo string
-	Wallet int64
+	Wallet  int64
 	Address
 }
 
@@ -70,10 +70,10 @@ type Spot struct {
 //TODO: change data type of start and end time
 type Slot struct {
 	DBModel
-	StartTime time.Time `gorm:"type:datetime"`
-	EndTime   time.Time `gorm:"type:datetime"`
-	Price     int
-	SpotID    uint
+	StartTime  time.Time `gorm:"type:datetime"`
+	EndTime    time.Time `gorm:"type:datetime"`
+	Price      int
+	SpotID     uint
 	Availabile bool
 }
 
@@ -85,10 +85,10 @@ type SearchInput struct {
 	GpsLocation
 }
 
-type Booking struct{
+type Booking struct {
 	DBModel
-	UserID uint
+	UserID  uint
 	OwnerID uint
-	SlotID uint
-	Price int64
+	SlotID  uint
+	Price   int64
 }
