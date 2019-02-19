@@ -30,6 +30,7 @@ type User struct {
 	Email    string
 	// 	Vehicles string
 	PhoneNo string
+	Wallet int64
 	Address
 }
 
@@ -38,7 +39,6 @@ type Owner struct {
 	DBModel
 	Property []Property
 	UserID   uint
-	Wallet int64
 }
 
 // GpsLocation Location co-Ordinates fetched by API in terms of latitude and longitude
@@ -87,7 +87,7 @@ type SearchInput struct {
 
 type Booking struct{
 	DBModel
-	Booker uint
+	UserID uint
 	OwnerID uint
 	SlotID uint
 	Price int64

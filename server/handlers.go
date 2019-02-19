@@ -135,9 +135,9 @@ func regSlot(c *gin.Context) {
 	c.JSON(200, "Successfully Added Slot")
 }
 
+// UserB pays UserA
 func payment(c *gin.Context) {
 	var input struct {
-		Owner  uint
 		SlotID uint
 		Price  int64
 		Token  string
@@ -147,10 +147,10 @@ func payment(c *gin.Context) {
 	db := getDB(c)
 	claims := jwt.ExtractClaims(c)
 	id := claims["id"]
-	var user models.User
-	db.Where("id = ?", id).First(&user)
+	var userB models.User
+	db.Where("id = ?", id).First(&userB)
 
-	var fail, failmsg = paymentHandler(input.Price, user.Email, input.Token)
+	var fail, failmsg = paymentHandler(input.Price, userB.Email, input.Token)
 	if fail == false {
 		log.Print(failmsg)
 		c.JSON(401, failmsg)
@@ -163,19 +163,27 @@ func payment(c *gin.Context) {
 	slot.Availabile = false
 	db.Save(slot)
 
+	//Extracting Owner ID of the property
+	var spot models.Spot
+	db.Where("id = ?", slot.SpotID).First(&spot)
+	var property models.Property
+	db.Where("id = ?", spot.PropertyID).First(&property)
+
 	// Creating the booking record
 	newBooking := models.Booking{
-		Booker: user.ID,
-		OwnerID:  input.Owner,
+		UserID: userB.ID,
+		OwnerID:  property.OwnerID,
 		SlotID: input.SlotID,
 		Price:  input.Price,
 	}
 	db.Create(&newBooking)
 
-	// Giving points to the Owner
+	// Giving points to the User A
 	var owner models.Owner
-	db.Where("user_id = ?",input.Owner).First(&owner)
-	owner.Wallet = owner.Wallet + input.Price
+	db.Where("id = ?",property.OwnerID).First(&owner)
+	var userA models.User
+	db.Where("id = ?",owner.UserID).First(&userA)
+	userA.Wallet = userA.Wallet + input.Price
 	db.Save(&owner)
 
 	c.JSON(202, "Booked Successfully!")
