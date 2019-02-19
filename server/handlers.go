@@ -23,11 +23,16 @@ func getDB(c *gin.Context) *gorm.DB {
 func userRegistration(c *gin.Context) {
 	db := getDB(c)
 	var newuser models.User
+	var checkUser models.User
 	c.BindJSON(&newuser)
 	fmt.Println(newuser)
-	db.Create(&newuser)
-
-	c.JSON(201, "User added successfully!")
+	db.Where("u_name = ?", newuser.UName).First(&checkUser)
+	if checkUser.UName != "" {
+		c.JSON(409, "User Already Exists")
+	} else {
+		db.Create(&newuser)
+		c.JSON(201, "User added successfully!")
+	}
 }
 
 func getUserFirstName(c *gin.Context) {
@@ -107,6 +112,7 @@ func fetchParkingSpots(c *gin.Context) {
 	c.JSON(200, properties)
 }
 
+//TODO: refactor function name and output string
 func regParkingSpot(c *gin.Context) {
 	db := getDB(c)
 	claims := jwt.ExtractClaims(c)
@@ -158,3 +164,15 @@ func modifySpot(c *gin.Context) {
 	db.Where("id = ?", modSpot.ID).First(&spot).Update(&modSpot)
 	c.JSON(200, "Successfully Modified Spot")
 }
+
+func modifySlot(c *gin.Context) {
+	var slot models.Slot
+	var modSlot models.Slot
+	db := getDB(c)
+	c.BindJSON(&modSlot)
+	fmt.Println(modSlot)
+	db.Where("id = ?", modSlot.ID).First(&slot).Update(&modSlot)
+	c.JSON(200, "Successfully Modified Spot")
+}
+
+// user.PATCH("/:id/listings/modifySlot", modifySlot)
