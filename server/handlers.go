@@ -44,6 +44,18 @@ func getUserFirstName(c *gin.Context) {
 	c.JSON(200, user.FName)
 }
 
+func mylisting(c *gin.Context) {
+	db := getDB(c)
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	var owner models.Owner
+	db.Where("user_id = ?", id).First(&owner)
+	fmt.Println(owner.ID)
+	var properties []models.Property
+	db.Preload("Spots").Preload("Spots.Slots").Where("owner_id = ?", owner.ID).Find(&properties)
+	c.JSON(200, properties)
+}
+
 //fetch parking spots. We are assuming that you can book parking for 1hour only.
 func fetchParkingSpots(c *gin.Context) {
 	var searchInput models.SearchInput
