@@ -171,11 +171,10 @@ func payment(c *gin.Context) {
 	// First check if the slot is available
 	var slot models.Slot
 	db.Where("id = ?", input.SlotID).First(&slot)
-	if slot.Availabile == false{
+	if slot.Available == false {
 		c.JSON(401, "Sorry!, Someone has taken the Slot.")
 		return
 	}
-
 
 	var fail, failmsg = paymentHandler(input.Price, userB.Email, input.Token)
 	if fail == false {
@@ -185,7 +184,7 @@ func payment(c *gin.Context) {
 	}
 
 	// Since the payment is successful, Slot is no more available
-	slot.Availabile = false
+	slot.Available = false
 	db.Save(slot)
 
 	//Extracting Owner ID of the property
