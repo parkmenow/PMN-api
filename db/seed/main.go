@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/parkmenow/PMN-api/db"
 	"github.com/parkmenow/PMN-api/models"
 
@@ -13,6 +15,10 @@ import (
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	var users []models.User
 	var owners []models.Owner
 	var properties []models.Property
@@ -23,7 +29,11 @@ func main() {
 	getData("data/properties.json", &properties)
 	getData("data/spots.json", &spots)
 	getData("data/slots.json", &slots)
-	database, err := gorm.Open("sqlite3", "pmn.db")
+	//database, err := gorm.Open("sqlite3", "pmn.db")
+	DATABASE := os.Getenv("database")
+	databaseURL := os.Getenv("DATABASE_URL")
+	database, err := gorm.Open(DATABASE, databaseURL)
+
 	if err != nil {
 		panic("failed to establish database connection")
 	}
