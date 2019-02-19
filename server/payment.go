@@ -10,8 +10,8 @@ import (
 
 func paymentHandler(price int64, email string, token string) (bool, string) {
 
-	//export SecretKey="sk_test_1pSlxntEQATjsOv5HLI49FaW"
-	var sh_key = os.Getenv("SecretKey")
+	//export SECRET_KEY="sk_test_1pSlxntEQATjsOv5HLI49FaW"
+	var sh_key = os.Getenv("SECRET_KEY")
 	stripe.Key = sh_key
 
 	params := &stripe.ChargeParams{
