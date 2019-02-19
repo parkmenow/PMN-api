@@ -4,41 +4,41 @@
     "EndTime": "2006-01-02T15:00:00.000Z",
     "Price": 100,
     "SpotID": 1,
-    "Availabile": true
+    "Available": false
   },
   {
     "StartTime": "2006-01-02T15:00:00.000Z",
     "EndTime": "2006-01-02T16:00:00.000Z",
     "Price": 100,
     "SpotID": 1,
-    "Availabile": true
+    "Available": true
   },
   {
     "StartTime": "2006-01-02T16:00:00.000Z",
     "EndTime": "2006-01-02T17:00:00.000Z",
     "Price": 100,
     "SpotID": 1,
-    "Availabile": true
+    "Available": true
   },
   {
     "StartTime": "2006-01-02T17:00:00.000Z",
     "EndTime": "2006-01-02T18:00:00.000Z",
     "Price": 100,
     "SpotID": 3,
-    "Availabile": true
+    "Available": true
   },
   {
     "StartTime": "2006-01-02T14:00:00.000Z",
     "EndTime": "2006-01-02T15:00:00.000Z",
     "Price": 100,
     "SpotID": 3,
-    "Availabile": true
+    "Available": true
   },
   {
     "StartTime": "2006-01-02T14:00:00.000Z",
     "EndTime": "2006-01-02T15:00:00.000Z",
     "Price": 100,
     "SpotID": 4,
-    "Availabile": true
+    "Available": true
   }
 ]

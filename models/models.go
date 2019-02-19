@@ -74,7 +74,7 @@ type Slot struct {
 	EndTime    time.Time `gorm:"type:timestamp with time zone"`
 	Price      int
 	SpotID     uint
-	Availabile bool
+	Available bool
 }
 
 //SearchInput is the input details from user to search parking spots
