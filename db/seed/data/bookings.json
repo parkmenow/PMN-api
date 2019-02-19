@@ -1,0 +1,14 @@
+[
+  {
+    "UserID": 1,
+    "OwnerID": 2,
+    "SlotID": 3,
+    "Price": 440
+  },
+  {
+    "UserID": 3,
+    "OwnerID": 1,
+    "SlotID": 1,
+    "Price": 200
+  }
+]

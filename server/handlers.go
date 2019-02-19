@@ -2,13 +2,12 @@ package server
 
 import (
 	"fmt"
-
-	jwt "github.com/appleboy/gin-jwt"
+	"github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-
 	"github.com/parkmenow/PMN-api/constants"
 	"github.com/parkmenow/PMN-api/models"
+	"log"
 )
 
 // getHello defines the endpoint for initial test
@@ -25,7 +24,6 @@ func userRegistration(c *gin.Context) {
 	var newuser models.User
 	var checkUser models.User
 	c.BindJSON(&newuser)
-	fmt.Println(newuser)
 	db.Where("u_name = ?", newuser.UName).First(&checkUser)
 	if checkUser.UName != "" {
 		c.JSON(409, "User Already Exists")
@@ -155,6 +153,67 @@ func regSlot(c *gin.Context) {
 	c.JSON(200, "Successfully Added Slot")
 }
 
+// UserB pays UserA
+func payment(c *gin.Context) {
+	var input struct {
+		SlotID uint
+		Price  int64
+		Token  string
+	}
+	c.BindJSON(&input)
+
+	db := getDB(c)
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	var userB models.User
+	db.Where("id = ?", id).First(&userB)
+
+	// First check if the slot is available
+	var slot models.Slot
+	db.Where("id = ?", input.SlotID).First(&slot)
+	if slot.Availabile == false{
+		c.JSON(401, "Sorry!, Someone has taken the Slot.")
+		return
+	}
+
+
+	var fail, failmsg = paymentHandler(input.Price, userB.Email, input.Token)
+	if fail == false {
+		log.Print(failmsg)
+		c.JSON(401, failmsg)
+		return
+	}
+
+	// Since the payment is successful, Slot is no more available
+	slot.Availabile = false
+	db.Save(slot)
+
+	//Extracting Owner ID of the property
+	var spot models.Spot
+	db.Where("id = ?", slot.SpotID).First(&spot)
+	var property models.Property
+	db.Where("id = ?", spot.PropertyID).First(&property)
+
+	// Creating the booking record
+	newBooking := models.Booking{
+		UserID:  userB.ID,
+		OwnerID: property.OwnerID,
+		SlotID:  input.SlotID,
+		Price:   input.Price,
+	}
+	db.Create(&newBooking)
+
+	// Giving points to the User A
+	var owner models.Owner
+	db.Where("id = ?", property.OwnerID).First(&owner)
+	var userA models.User
+	db.Where("id = ?", owner.UserID).First(&userA)
+	userA.Wallet = userA.Wallet + input.Price
+	db.Save(&userA)
+
+	c.JSON(202, "Booked Successfully!")
+}
+
 func modifySpot(c *gin.Context) {
 	var spot models.Spot
 	var modSpot models.Spot
@@ -163,6 +222,7 @@ func modifySpot(c *gin.Context) {
 	fmt.Println(modSpot)
 	db.Where("id = ?", modSpot.ID).First(&spot).Update(&modSpot)
 	c.JSON(200, "Successfully Modified Spot")
+
 }
 
 func modifySlot(c *gin.Context) {
