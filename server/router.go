@@ -10,7 +10,7 @@ func defineRoutes(router *gin.Engine) {
 	router.GET("/", getHello)
 	router.POST("/login", authMiddleware.LoginHandler)
 	router.POST("/signup", userRegistration)
-
+  
 	user := router.Group("/dashboard/:id")
 	{
 		user.Use(authMiddleware.MiddlewareFunc())
