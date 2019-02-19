@@ -30,6 +30,7 @@ type User struct {
 	Email    string
 	// 	Vehicles string
 	PhoneNo string
+	Wallet  int64
 	Address
 }
 
@@ -69,11 +70,11 @@ type Spot struct {
 //TODO: change data type of start and end time
 type Slot struct {
 	DBModel
-	StartTime time.Time `gorm:"type:datetime"`
-	EndTime   time.Time `gorm:"type:datetime"`
-	Price     int
-	SpotID    uint
-	BookingID uint
+	StartTime  time.Time `gorm:"type:datetime"`
+	EndTime    time.Time `gorm:"type:datetime"`
+	Price      int
+	SpotID     uint
+	Availabile bool
 }
 
 //SearchInput is the input details from user to search parking spots
@@ -82,4 +83,12 @@ type SearchInput struct {
 	StartTime time.Time `gorm:"type:datetime"`
 	EndTime   time.Time `gorm:"type:datetime"`
 	GpsLocation
+}
+
+type Booking struct {
+	DBModel
+	UserID  uint
+	OwnerID uint
+	SlotID  uint
+	Price   int64
 }

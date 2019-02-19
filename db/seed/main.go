@@ -21,6 +21,9 @@ func main() {
 	var properties []models.Property
 	var spots []models.Spot
 	var slots []models.Slot
+	var bookings []models.Booking
+
+	getData("data/bookings.json", &bookings)
 	getData("data/users.json", &users)
 	getData("data/owners.json", &owners)
 	getData("data/properties.json", &properties)
@@ -45,6 +48,9 @@ func main() {
 	defer database.Close()
 	db.Init(database)
 
+	for _, booking := range bookings {
+		db.DB.Create(&booking)
+	}
 	for _, user := range users {
 		db.DB.Create(&user)
 	}
@@ -60,7 +66,9 @@ func main() {
 	for _, slot := range slots {
 		db.DB.Create(&slot)
 	}
+
 	println("Done, copy pmn.db to root folder")
+
 }
 
 func getData(fileName string, v interface{}) {
