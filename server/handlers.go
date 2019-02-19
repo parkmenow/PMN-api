@@ -55,6 +55,16 @@ func mylisting(c *gin.Context) {
 	c.JSON(200, properties)
 }
 
+func modifyProperty(c *gin.Context) {
+	var property models.Property
+	var modProperty models.Property
+	db := getDB(c)
+	c.BindJSON(&modProperty)
+	fmt.Println(modProperty)
+	db.Where("id = ?", modProperty.ID).First(&property).Update(&modProperty)
+	c.JSON(200, "Successfully Modified Property")
+}
+
 //fetch parking spots. We are assuming that you can book parking for 1hour only.
 func fetchParkingSpots(c *gin.Context) {
 	var searchInput models.SearchInput
