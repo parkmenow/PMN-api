@@ -2,12 +2,13 @@ package server
 
 import (
 	"fmt"
-	"github.com/appleboy/gin-jwt"
+	"log"
+
+	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/parkmenow/PMN-api/constants"
 	"github.com/parkmenow/PMN-api/models"
-	"log"
 )
 
 // getHello defines the endpoint for initial test
@@ -60,10 +61,10 @@ func fetchParkingSpots(c *gin.Context) {
 	c.BindJSON(&searchInput)
 
 	db := getDB(c)
-
 	var properties []models.Property
 	fmt.Println(searchInput.StartTime)
-	db.Preload("Spots", "type = ?", searchInput.Type).Preload("Spots.Slots", "start_time = ?", searchInput.StartTime).Find(&properties)
+
+	db.Preload("Spots", "type = ?", searchInput.Type).Preload("Spots.Slots", "start_time = ? AND available = ?", searchInput.StartTime, 1).Find(&properties)
 
 	//fmt.Println(searchInput)
 	// layout := "2006-01-02T15:04:05.000Z"
