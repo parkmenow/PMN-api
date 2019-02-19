@@ -214,6 +214,66 @@ func payment(c *gin.Context) {
 	c.JSON(202, "Booked Successfully!")
 }
 
+func paymentByWallet(c *gin.Context) {
+	var input struct {
+		SlotID uint
+		Price  int
+	}
+	c.BindJSON(&input)
+	fmt.Println(input)
+	db := getDB(c)
+
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	fmt.Println(id)
+	// First Check if User's wallet has enough Balance in it
+	var userB models.User
+	db.Where("id = ?", id).First(&userB)
+	if userB.Wallet < int64(input.Price) {
+		c.JSON(401, "Soory!, Not enough Credit in the Wallet.")
+		return
+	}
+
+	// First check if the slot is available
+	var slot models.Slot
+	db.Where("id = ?", input.SlotID).First(&slot)
+	if slot.Available == false {
+		c.JSON(401, "Sorry!, Someone has taken the Slot.")
+		return
+	}
+
+	// Since the payment is successful, Slot is no more available
+	slot.Available = false
+	db.Save(slot)
+
+	//Extracting User ID of the property
+	var spot models.Spot
+	db.Where("id = ?", slot.SpotID).First(&spot)
+	var property models.Property
+	db.Where("id = ?", spot.PropertyID).First(&property)
+	var owner models.Owner
+	db.Where("id = ?", property.OwnerID).First(&owner)
+	var userA models.User
+	db.Where("id = ?", owner.UserID).First(&userA)
+
+	// Add the money to wallet of User of the Spot
+	userA.Wallet = userA.Wallet + int64(input.Price)
+	db.Save(userA)
+
+	// Subtract money from wallet of User who booked the Spot
+	userB.Wallet = userB.Wallet - int64(input.Price)
+	db.Save(userB)
+	// Creating the booking record
+	newBooking := models.Booking{
+		UserID:  userB.ID,
+		OwnerID: property.OwnerID,
+		SlotID:  input.SlotID,
+		Price:   int64(input.Price),
+	}
+	db.Create(&newBooking)
+	c.JSON(202, "Booked Successfully!")
+}
+
 func modifySpot(c *gin.Context) {
 	var spot models.Spot
 	var modSpot models.Spot
