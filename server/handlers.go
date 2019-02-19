@@ -162,6 +162,15 @@ func payment(c *gin.Context) {
 	var userB models.User
 	db.Where("id = ?", id).First(&userB)
 
+	// First check if the slot is available
+	var slot models.Slot
+	db.Where("id = ?", input.SlotID).First(&slot)
+	if slot.Availabile == false{
+		c.JSON(401, "Sorry!, Someone has taken the Slot.")
+		return
+	}
+
+
 	var fail, failmsg = paymentHandler(input.Price, userB.Email, input.Token)
 	if fail == false {
 		log.Print(failmsg)
@@ -170,8 +179,6 @@ func payment(c *gin.Context) {
 	}
 
 	// Since the payment is successful, Slot is no more available
-	var slot models.Slot
-	db.Where("id = ?", input.SlotID).First(&slot)
 	slot.Availabile = false
 	db.Save(slot)
 
@@ -196,7 +203,7 @@ func payment(c *gin.Context) {
 	var userA models.User
 	db.Where("id = ?", owner.UserID).First(&userA)
 	userA.Wallet = userA.Wallet + input.Price
-	db.Save(&owner)
+	db.Save(&userA)
 
 	c.JSON(202, "Booked Successfully!")
 }
