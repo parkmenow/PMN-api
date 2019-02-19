@@ -70,10 +70,12 @@ type Spot struct {
 //TODO: change data type of start and end time
 type Slot struct {
 	DBModel
-	StartTime  time.Time `gorm:"type:timestamp with time zone"`
-	EndTime    time.Time `gorm:"type:timestamp with time zone"`
-	Price      int
-	SpotID     uint
+	StartTime time.Time `gorm:"type:timestamp with time zone"`
+	EndTime   time.Time `gorm:"type:timestamp with time zone"`
+	// StartTime time.Time `gorm:"type:datetime"`
+	// EndTime   time.Time `gorm:"type:datetime"`
+	Price     int
+	SpotID    uint
 	Available bool
 }
 
