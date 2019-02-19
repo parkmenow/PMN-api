@@ -15,10 +15,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+
 	var users []models.User
 	var owners []models.Owner
 	var properties []models.Property
@@ -33,10 +30,18 @@ func main() {
 	getData("data/spots.json", &spots)
 	getData("data/slots.json", &slots)
 	//database, err := gorm.Open("sqlite3", "pmn.db")
-	DATABASE := os.Getenv("database")
+	DATABASE := os.Getenv("DB_DRIVER")
 	databaseURL := os.Getenv("DATABASE_URL")
+	// var database *gorm.DB
+	if DATABASE == "" {
+		err := godotenv.Load("../../.env")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+		DATABASE = os.Getenv("DB_DRIVER")
+		databaseURL = os.Getenv("DATABASE_URL")
+	}
 	database, err := gorm.Open(DATABASE, databaseURL)
-
 	if err != nil {
 		panic("failed to establish database connection")
 	}
