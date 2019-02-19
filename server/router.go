@@ -10,7 +10,7 @@ func defineRoutes(router *gin.Engine) {
 	router.GET("/", getHello)
 	router.POST("/login", authMiddleware.LoginHandler)
 	router.POST("/signup", userRegistration)
-  
+
 	user := router.Group("/dashboard/:id")
 	{
 		user.Use(authMiddleware.MiddlewareFunc())
@@ -22,5 +22,6 @@ func defineRoutes(router *gin.Engine) {
 		user.POST("/regparking/regSpot/:spot_id/regSlot/:slot_id", regSlot)
 		user.PATCH("/listings/modifySpot", modifySpot)
 		user.PATCH("/payment", payment)
+		user.PATCH("/paybywallet", paymentByWallet)
 	}
 }
