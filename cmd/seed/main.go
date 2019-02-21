@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -44,9 +43,7 @@ func main() {
 		DATABASE = os.Getenv("DB_DRIVER")
 		databaseURL = os.Getenv("DATABASE_URL")
 	}
-	fmt.Println(DATABASE, databaseURL)
-	database, err := gorm.Open("postgres", "user=admin", "password=admin", "dbname=postgres")
-	//gorm.Open("posgres", "user=admin", "password")
+	database, err := gorm.Open(DATABASE, databaseURL)
 	if err != nil {
 		panic("failed to establish database connection")
 	}
