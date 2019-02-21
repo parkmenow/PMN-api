@@ -12,6 +12,10 @@ type DBModel struct {
 	DeletedAt *time.Time `json:"-"`
 }
 
+type LoginValues struct{
+	U_Name string
+	Password string
+}
 // Address represents one address
 type Address struct {
 	//DBModel

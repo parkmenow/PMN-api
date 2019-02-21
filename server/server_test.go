@@ -2,6 +2,11 @@ package server_test
 
 import (
 	"bytes"
+	"fmt"
+
+	//"github.com/parkmenow/PMN-api/models"
+	"io"
+
 	//"fmt"
 	"github.com/joho/godotenv"
 	"log"
@@ -21,8 +26,14 @@ import (
 )
 
 // performRequest performs a http request and returns the response
-func performRequest(r http.Handler, method, path string, reqbody string) *httptest.ResponseRecorder {
-	req, _ := http.NewRequest(method, path, bytes.NewBuffer([]byte(reqbody)))
+func performRequest(r http.Handler, method, path string, body io.Reader) *httptest.ResponseRecorder {
+	req, _ := http.NewRequest(method, path, body)
+
+	// Create a Bearer string by appending string access token, adding a bearer token for checking the authentication
+	// We have created a token for user: test3, pass: test3, token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzA3Mzg1OTAsImlkIjozLCJvcmlnX2lhdCI6MTU1MDczODU5MH0.AwyBaGE31Yq2dURoP7uIe91zIQwHlTkkYW6a2kLoVa8
+	var bearer = "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzA3Mzg1OTAsImlkIjozLCJvcmlnX2lhdCI6MTU1MDczODU5MH0.AwyBaGE31Yq2dURoP7uIe91zIQwHlTkkYW6a2kLoVa8"
+	req.Header.Add("Authorization", bearer)
+
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	return w
@@ -58,10 +69,11 @@ var _ = Describe("Server", func() {
 		db.Close()
 	})
 
-	Describe("Version 1 API at /api/v1", func() {
-		Describe("The / endpoint or helloworld endpoint", func() {
+	Describe("Test cases for server API end points, / ", func() {
+		Describe("The / endpoint or helloworld", func() {
 			BeforeEach(func() {
-				response = performRequest(router, "GET", "/", "")
+				var body=new(bytes.Buffer)
+				response = performRequest(router, "GET", "/",body)
 			})
 
 			It("Returns with Status 200", func() {
@@ -72,7 +84,109 @@ var _ = Describe("Server", func() {
 				Expect(response.Body.String()).To(Equal("Hello World"))
 			})
 		})
+
+		// TODO: Needs to fix this.
+		/*
+		Describe("API /login", func() {
+			BeforeEach(func() {
+				    body := new(bytes.Buffer)
+					body.Write([]byte(`{"U_Name": "test3", "Password": "test3"}`))
+					response = performRequest(router, "POST", "/login", body)
+					fmt.Println((response.Body.String()))
+				//bytes.NewBuffer([]byte(body))
+			})
+
+			It("Returns with Status 200", func() {
+				Expect(response.Code).To(Equal(200))
+			})
+
+		})
+		*/
+
+
+		Describe("API /dashboard/:id/", func() {
+			BeforeEach(func() {
+				body := new(bytes.Buffer)
+				response = performRequest(router, "GET", "/dashboard/1/", body)
+				fmt.Println((response.Body.String()))
+				//bytes.NewBuffer([]byte(body))
+			})
+
+			It("Returns with Status 200", func() {
+				Expect(response.Code).To(Equal(200))
+			})
+			It("Returns with Output 'Bharath'", func() {
+				Expect(response.Body.String()).To(Equal("Bharath"))
+			})
+
+		})
+
+		Describe("API /dashboard/:id/mylistings", func() {
+			BeforeEach(func() {
+				body := new(bytes.Buffer)
+				response = performRequest(router, "GET", "/dashboard/1/mylistings", body)
+				fmt.Println((response.Body.String()))
+				//bytes.NewBuffer([]byte(body))
+			})
+
+			It("Returns with Status 200", func() {
+				Expect(response.Code).To(Equal(200))
+			})
+
+		})
+
+		Describe("API /dashboard/:id/parkmenow", func() {
+			BeforeEach(func() {
+				body := new(bytes.Buffer)
+				body.Write([]byte(`{
+									"Type" : 1,
+    								"Lat": 35.660736,
+    								"Long": 139.72955,
+    								"StartTime" : "2006-01-02T14:00:00.000Z",
+									"EndTime" : "2006-01-02T15:00:00.000Z"
+									}`))
+
+				response = performRequest(router, "POST", "/dashboard/1/parkmenow", body)
+				fmt.Println((response.Body.String()))
+			})
+
+			It("Returns with Status 200", func() {
+				Expect(response.Code).To(Equal(200))
+			})
+
+		})
+
+		Describe("API /dashboard/:id/regparking", func() {
+			BeforeEach(func() {
+				body := new(bytes.Buffer)
+				body.Write([]byte(`{
+       							 "Line1" : "1-5-6, 1108",
+       							 "Line2" : "Higashi-ojima",
+        							"Pincode": "132-0034",
+       							 "lat": 35.68981,
+       							 "long": 139.84755,
+       							 "OwnerID": 3
+    								}
+								`))
+
+				response = performRequest(router, "POST", "/dashboard/1/regparking", body)
+				fmt.Println((response.Body.String()))
+			})
+
+			It("Returns with Status 201", func() {
+				Expect(response.Code).To(Equal(201))
+			})
+
+			It("Returns saying succesful booking", func() {
+				Expect(response.Body.String()).To(Equal("Listed a new parking Spot Successfully!"))
+			})
+
+		})
+
+
 	})
+
+
 })
 
 // sign up user testing
