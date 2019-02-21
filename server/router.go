@@ -11,7 +11,7 @@ func defineRoutes(router *gin.Engine) {
 	router.POST("/login", authMiddleware.LoginHandler)
 	router.POST("/signup", userRegistration)
 
-	user := router.Group("/dashboard/:id")
+	user := router.Group("/dashboard/:id") //TODO: remove :id and check the api working
 	{
 		user.Use(authMiddleware.MiddlewareFunc())
 		user.GET("/", getUserFirstName)

@@ -26,12 +26,12 @@ type User struct {
 	FName    string
 	LName    string
 	UName    string `gorm:"type:varchar(40); not null`
-	Password string `gorm:"type:varchar(40); not null`
+	Password string `gorm:"type:varchar(40); not null` // TODO: Change this to an encrypted version
 	Email    string
 	// 	Vehicles string
 	PhoneNo string
 	Wallet  int64
-	Address
+	Address // TODO: Once requirements are satisfied, then change this
 }
 
 // Owner specifies if a User has parking space to sublet
@@ -50,25 +50,25 @@ type GpsLocation struct {
 // Property represents a single property owned by a owner
 type Property struct {
 	DBModel
-	Address
-	GpsLocation
+	Address // TODO: Once requirements are satisfied, then change this
+	GpsLocation // TODO: Once requirements are satisfied, then change this
 	Spots   []Spot
 	OwnerID uint
 }
 
 // Spot represent individual parking pots that can be sublet
-type Spot struct {
+type Spot struct { // TODO: Refactor this spot name to ParkingSpot
 	DBModel
-	Type        int
+	Type        int // TODO: What is this actually, can be transformed to string type.
 	ImageURL    string
 	Description string
-	Slots       []Slot
+	Slots       []Slot // TODO: Refactor
 	PropertyID  uint
 }
 
 // Slot holds the booking and avaialability details for each Space for one day 12hrs where T variables holds bookingID if booked
 //TODO: change data type of start and end time
-type Slot struct {
+type Slot struct { // TODO: Refactor this spot name to TimeSlot
 	DBModel
 	StartTime time.Time `gorm:"type:timestamp with time zone"`
 	EndTime   time.Time `gorm:"type:timestamp with time zone"`

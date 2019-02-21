@@ -2,12 +2,18 @@ package server_test
 
 import (
 	"bytes"
+	//"fmt"
+	"github.com/joho/godotenv"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/lib/pq"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -28,10 +34,18 @@ var _ = Describe("Server", func() {
 		db       *gorm.DB
 		router   *gin.Engine
 		response *httptest.ResponseRecorder
+
 	)
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	driver := os.Getenv("DB_DRIVER")
+	url := os.Getenv("DATABASE_URL")
 
 	BeforeEach(func() {
-		d, err := gorm.Open("sqlite3", "pmn.db")
+
+		d, err := gorm.Open(driver, url)
 		db = d
 		if err != nil {
 			panic(err)

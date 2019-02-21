@@ -13,6 +13,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -30,11 +31,11 @@ func main() {
 	getData("data/spots.json", &spots)
 	getData("data/slots.json", &slots)
 	getData("data/bookings.json", &bookings)
-	//database, err := gorm.Open("sqlite3", "pmn.db")
+
 	DATABASE := os.Getenv("DB_DRIVER")
 	databaseURL := os.Getenv("DATABASE_URL")
-	// var database *gorm.DB
-	if DATABASE == "" {
+
+	if DATABASE == "" || databaseURL == "" {
 		err := godotenv.Load("../../.env")
 		if err != nil {
 			log.Fatal("Error loading .env file")
