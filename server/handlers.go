@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
+	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
@@ -292,6 +293,64 @@ func modifySpot(c *gin.Context) {
 	fmt.Println(modSpot)
 	db.Where("id = ?", modSpot.ID).First(&spot).Update(&modSpot)
 	c.JSON(200, "Successfully Modified Spot")
+
+}
+
+func cancelBooking(c *gin.Context){
+	// 1) Get the booking id and corresponding row of that booking
+	type BID struct {
+		// Booking Id
+		BookingId int
+	}
+	var bid BID
+	var booking models.Booking
+	c.BindJSON(&bid)
+	fmt.Println(bid.BookingId)
+	db := getDB(c)
+	// Assuming the id exists
+	db.Where("id=?", bid.BookingId).First(&booking)
+	booking.Status = "cancelled"
+	db.Save(&booking)
+
+	// 2) Make the slot available now, meaning change the status of the slot to available
+	fmt.Println(booking.SlotID)
+	var slot models.Slot
+	db.Where("id=?", booking.SlotID).Find(&slot)
+	slot.Available = true
+	fmt.Println(slot.StartTime.Sub(time.Now()).Hours())
+	db.Save(&slot)
+
+	// If user cancels booking before 48 hours, cancellation charge is free
+	// If before 48 hours to 24 hours, cancellation is 5% charge
+	// If it is less than 24 hours, cancellation is 10 % charge
+	var cancellationPercentage int64
+	hoursLeft := slot.StartTime.Sub(time.Now()).Hours()
+	if hoursLeft > 48{
+		cancellationPercentage = 0
+	}else if hoursLeft<48 && hoursLeft >24{
+		cancellationPercentage = 5
+
+	}else if hoursLeft < 24 && hoursLeft > 0{
+		cancellationPercentage = 10
+	}else if hoursLeft < 0{
+		c.JSON(200, gin.H{"info":"Booking cannot be cancelled, as time passed the start time",})
+	}
+
+	// 2) Deduct 10% of price user has paid to his booking, so add 90% of price to his wallet, tested user gets money into his account
+	var user models.User
+	db.Where("id=?", booking.UserID).Find(&user)
+	fmt.Println(user.Wallet)
+	user.Wallet = int64((100-cancellationPercentage) * booking.Price/100)
+	db.Save(&user)
+
+	// 3) Add 10% of amount to owner of the spot
+	var owner models.User
+	db.Where("id=?", booking.OwnerID).Find(&owner)
+	owner.Wallet = int64(cancellationPercentage * booking.Price/100)
+	db.Save(&owner)
+
+	// 5) Inform the API saying the task is done, with status code 200 and JSON that booking is cancelled
+	c.JSON(200, gin.H{"info":"Booking is cancelled",})
 
 }
 

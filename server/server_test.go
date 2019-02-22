@@ -162,7 +162,7 @@ var _ = Describe("Server", func() {
 				body.Write([]byte(`{
        							 "Line1" : "1-5-6, 1108",
        							 "Line2" : "Higashi-ojima",
-        							"Pincode": "132-0034",
+								"Pincode": "132-0034",
        							 "lat": 35.68981,
        							 "long": 139.84755,
        							 "OwnerID": 3
