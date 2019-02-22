@@ -116,7 +116,7 @@ var _ = Describe("Server", func() {
 				Expect(response.Code).To(Equal(200))
 			})
 			It("Returns with Output 'Bharath'", func() {
-				Expect(response.Body.String()).To(Equal("Bharath"))
+				Expect(response.Body.String()).To(Equal("\"Bharath\""))
 			})
 
 		})
@@ -178,7 +178,7 @@ var _ = Describe("Server", func() {
 			})
 
 			It("Returns saying succesful booking", func() {
-				Expect(response.Body.String()).To(Equal("Listed a new parking Spot Successfully!"))
+				Expect(response.Body.String()).To(Equal("\"Listed a new parking Spot Successfully!\""))
 			})
 
 		})

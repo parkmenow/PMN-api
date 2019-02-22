@@ -40,7 +40,7 @@ func getUserFirstName(c *gin.Context) {
 	id := claims["id"]
 	var user models.User
 	db.Where("id = ?", id).First(&user)
-	c.String(200, user.FName)
+	c.JSON(200, user.FName)
 }
 
 func mylisting(c *gin.Context) {
@@ -142,7 +142,7 @@ func regParkingSpot(c *gin.Context) {
 		db.Save(&owner)
 	}
 
-	c.String(201, "Listed a new parking Spot Successfully!")
+	c.JSON(201, "Listed a new parking Spot Successfully!")
 
 }
 
