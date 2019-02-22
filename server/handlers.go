@@ -305,4 +305,14 @@ func modifySlot(c *gin.Context) {
 	c.JSON(200, "Successfully Modified Spot")
 }
 
+func imageURL(c *gin.Context) {
+	var URL struct {
+		Url string
+	}
+	c.BindJSON(&URL)
+	fmt.Println(URL)
+	c.JSON(200, URL)
+
+}
+
 // user.PATCH("/:id/listings/modifySlot", modifySlot)
