@@ -309,7 +309,7 @@ func cancelBooking(c *gin.Context){
 	db := getDB(c)
 	// Assuming the id exists
 	db.Where("id=?", bid.BookingId).First(&booking)
-	booking.Status = "cancelled"
+	booking.Status = constants.StatusCancelled
 	db.Save(&booking)
 
 	// 2) Make the slot available now, meaning change the status of the slot to available

@@ -94,5 +94,5 @@ type Booking struct {
 	OwnerID uint
 	SlotID  uint
 	Price   int64
-	Status string
+	Status string //Can be active, done, cancelled
 }
