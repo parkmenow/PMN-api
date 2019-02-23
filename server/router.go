@@ -24,5 +24,6 @@ func defineRoutes(router *gin.Engine) {
 		user.PATCH("/listings/modifySpot", modifySpot)
 		user.PATCH("/payment", payment)
 		user.PATCH("/paybywallet", paymentByWallet)
+		user.POST("/cancelBooking", cancelBooking)
 	}
 }
