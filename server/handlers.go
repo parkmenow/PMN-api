@@ -415,5 +415,33 @@ func deleteSlot(c *gin.Context) {
 	}
 
 	c.JSON(200, "Successfully deleted")
+}
 
+func spotDelete(id int, db *gorm.DB) bool {
+	var spot models.Spot
+	var slots []models.Slot
+	db.Where("id = ?", id).Find(&spot)
+	db.Where("spot_id = ", id).Find(&slots)
+
+	// Delete all the slots in that spot
+	for _, slot := range slots {
+		_ := slotDelete(int(slot.ID), db)
+	}
+	//delete the spot. Set Deleted at as time.now()
+	db.Delete(&spot)
+	return true
+}
+
+func deleteSpot(c *gin.Context) {
+	db := getDB(c)
+	id, _ := strconv.Atoi(c.Params.ByName("spot_id"))
+
+	status := spotDelete(id, db)
+
+	if status == false {
+		c.JSON(404, "No such Spot exist")
+		return
+	}
+
+	c.JSON(200, "Spot Successfully deleted")
 }

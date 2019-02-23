@@ -26,5 +26,6 @@ func defineRoutes(router *gin.Engine) {
 		user.PATCH("/paybywallet", paymentByWallet)
 		user.POST("/cancelBooking", cancelBooking)
 		user.DELETE("/listings/parkings/:parking_id/spot/:spot_id/slot/:slot_id", deleteSlot)
+		user.DELETE("/listings/parkings/:parking_id/spot/:spot_id", deleteSpot)
 	}
 }
