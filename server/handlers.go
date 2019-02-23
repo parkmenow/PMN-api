@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
@@ -365,4 +366,54 @@ func modifySlot(c *gin.Context) {
 	c.JSON(200, "Successfully Modified Spot")
 }
 
-// user.PATCH("/:id/listings/modifySlot", modifySlot)
+func slotDelete(id int, db *gorm.DB) bool {
+	var slot models.Slot
+	var booking models.Booking
+
+	//change the availability of the slot to false
+	db.Where("id = ?", id).Find(&slot)
+	slot.Available = false
+	db.Save(&slot)
+
+	//cancel any active booking of that slot and do a 100% reimbursement
+	db.Where("slot_id = ? and status = ?", id, constants.StatusActive).Find(&booking)
+	if booking.ID > 0 {
+		booking.Status = constants.StatusCancelled
+		db.Save(&booking)
+
+		// return the money
+		var user models.User
+		var owner models.Owner
+		var ownerUser models.User
+		db.Where("id = ?", booking.UserID).Find(&user)
+		db.Where("id = ?", booking.OwnerID).Find(&owner)
+		db.Where("id = ?", owner.UserID).Find(&ownerUser)
+
+		user.Wallet = user.Wallet + booking.Price
+		ownerUser.Wallet = ownerUser.Wallet - booking.Price
+
+		db.Save(&user)
+		db.Save(&ownerUser)
+		return true
+	}
+
+	//delete the slot from the database
+	//this actually set the field Deleted_at as the time.now()
+	db.Delete(&slot)
+	return true
+}
+
+func deleteSlot(c *gin.Context) {
+	db := getDB(c)
+	id, _ := strconv.Atoi(c.Params.ByName("slot_id"))
+
+	status := slotDelete(id, db)
+
+	if status == false {
+		c.JSON(404, "No such slot exist")
+		return
+	}
+
+	c.JSON(200, "Successfully deleted")
+
+}
