@@ -373,3 +373,12 @@ func showBookings(c *gin.Context) {
 	db.Where("user_id = ? and status = ?", id, constants.StatusActive).Find(&bookings)
 	c.JSON(200, bookings)
 }
+
+func showBookingHistory(c *gin.Context) {
+	db := getDB(c)
+	var bookings []models.Booking
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	db.Where("user_id = ? and status = ?", id, constants.StatusDone).Find(&bookings)
+	c.JSON(200, bookings)
+}
