@@ -16,6 +16,7 @@ func defineRoutes(router *gin.Engine) {
 		user.Use(authMiddleware.MiddlewareFunc())
 		user.GET("/", getUserFirstName)
 		user.GET("/mylistings", mylisting)
+		user.GET("/bookings", showBookings)
 		user.PATCH("/mylistings/:property_id/modifyProperty", modifyProperty)
 		user.POST("/parkmenow", fetchParkingSpots)
 		user.POST("/regparking", regParkingSpot)

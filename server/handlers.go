@@ -365,4 +365,11 @@ func modifySlot(c *gin.Context) {
 	c.JSON(200, "Successfully Modified Spot")
 }
 
-// user.PATCH("/:id/listings/modifySlot", modifySlot)
+func showBookings(c *gin.Context) {
+	db := getDB(c)
+	var bookings []models.Booking
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	db.Where("user_id = ? and status = ?", id, constants.StatusActive).Find(&bookings)
+	c.JSON(200, bookings)
+}
