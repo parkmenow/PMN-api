@@ -445,3 +445,32 @@ func deleteSpot(c *gin.Context) {
 
 	c.JSON(200, "Spot Successfully deleted")
 }
+
+func propertyDelete(id int, db *gorm.DB) bool {
+	var property models.Property
+	var spots []models.Spot
+	db.Where("id = ?", id).Find(&property)
+	db.Where("property_id = ", id).Find(&spots)
+
+	// Delete all the spots in that spot
+	for _, spot := range spots {
+		_ := propertyDelete(int(spot.ID), db)
+	}
+	//delete the spot. Set Deleted at as time.now()
+	db.Delete(&property)
+	return true
+}
+
+func deleteProperty(c *gin.Context) {
+	db := getDB(c)
+	id, _ := strconv.Atoi(c.Params.ByName("property_id"))
+
+	status := propertyDelete(id, db)
+
+	if status == false {
+		c.JSON(404, "No such Property exist")
+		return
+	}
+
+	c.JSON(200, "Property Successfully deleted")
+}
