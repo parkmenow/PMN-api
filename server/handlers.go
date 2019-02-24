@@ -412,11 +412,11 @@ func deleteSlot(c *gin.Context) {
 	status := slotDelete(id, db)
 
 	if status == false {
-		c.JSON(404, "No such slot exist")
+		c.JSON(204, "No such slot exist")
 		return
 	}
 
-	c.JSON(200, "Successfully deleted")
+	c.JSON(202, "Successfully deleted")
 }
 
 func spotDelete(id int, db *gorm.DB) bool {
@@ -441,11 +441,11 @@ func deleteSpot(c *gin.Context) {
 	status := spotDelete(id, db)
 
 	if status == false {
-		c.JSON(404, "No such Spot exist")
+		c.JSON(204, "No such Spot exist")
 		return
 	}
 
-	c.JSON(200, "Spot Successfully deleted")
+	c.JSON(202, "Spot Successfully deleted")
 }
 
 func propertyDelete(id int, db *gorm.DB) bool {
@@ -470,11 +470,11 @@ func deleteProperty(c *gin.Context) {
 	status := propertyDelete(id, db)
 
 	if status == false {
-		c.JSON(404, "No such Property exist")
+		c.JSON(204, "No such Property exist")
 		return
 	}
 
-	c.JSON(200, "Property Successfully deleted")
+	c.JSON(202, "Property Successfully deleted")
 }
 
 func showBookings(c *gin.Context) {
