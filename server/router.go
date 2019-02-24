@@ -17,7 +17,7 @@ func defineRoutes(router *gin.Engine) {
 		user.GET("/", getUserFirstName)
 		user.GET("/mylistings", mylisting)
 		user.PATCH("/mylistings/:property_id/modifyProperty", modifyProperty)
-		user.POST("/parkmenow", fetchParkingSpots)
+		user.POST("/parkmenow", fetchParkingSpots) //TODO: Aren't we need to show all free stops availalbe at that time.
 		user.POST("/regparking", regParkingSpot)
 		user.POST("/regparking/regSpot/:spot_id", regSpot)
 		user.POST("/regparking/regSpot/:spot_id/regSlot/:slot_id", regSlot)
