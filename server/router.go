@@ -16,6 +16,8 @@ func defineRoutes(router *gin.Engine) {
 		user.Use(authMiddleware.MiddlewareFunc())
 		user.GET("/", getUserFirstName)
 		user.GET("/mylistings", mylisting)
+		user.GET("/bookings", showBookings)
+		user.GET("/bookings/history", showBookingHistory)
 		user.PATCH("/mylistings/:property_id/modifyProperty", modifyProperty)
 		user.POST("/parkmenow", fetchParkingSpots) //TODO: Aren't we need to show all free stops availalbe at that time.
 		user.POST("/regparking", regParkingSpot)

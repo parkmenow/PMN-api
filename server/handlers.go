@@ -309,7 +309,7 @@ func cancelBooking(c *gin.Context){
 	db := getDB(c)
 	// Assuming the id exists
 	db.Where("id=?", bid.BookingId).First(&booking)
-	booking.Status = "cancelled"
+	booking.Status = constants.StatusCancelled
 	db.Save(&booking)
 
 	// 2) Make the slot available now, meaning change the status of the slot to available
@@ -367,4 +367,20 @@ func modifySlot(c *gin.Context) {
 	c.JSON(200, "Successfully Modified Spot")
 }
 
-// user.PATCH("/:id/listings/modifySlot", modifySlot)
+func showBookings(c *gin.Context) {
+	db := getDB(c)
+	var bookings []models.Booking
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	db.Where("user_id = ? and status = ?", id, constants.StatusActive).Find(&bookings)
+	c.JSON(200, bookings)
+}
+
+func showBookingHistory(c *gin.Context) {
+	db := getDB(c)
+	var bookings []models.Booking
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	db.Where("user_id = ? and status = ?", id, constants.StatusDone).Find(&bookings)
+	c.JSON(200, bookings)
+}
