@@ -17,7 +17,7 @@ func defineRoutes(router *gin.Engine) {
 		user.GET("/", getUserFirstName)
 		user.GET("/mylistings", mylisting)
 		user.GET("/bookings", showBookings)
-		user.GET("bookings/history", showBookingHistory)
+		user.GET("/bookings/history", showBookingHistory)
 		user.PATCH("/mylistings/:property_id/modifyProperty", modifyProperty)
 		user.POST("/parkmenow", fetchParkingSpots)
 		user.POST("/regparking", regParkingSpot)
