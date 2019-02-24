@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
@@ -365,6 +366,115 @@ func modifySlot(c *gin.Context) {
 	fmt.Println(modSlot)
 	db.Where("id = ?", modSlot.ID).First(&slot).Update(&modSlot)
 	c.JSON(200, "Successfully Modified Spot")
+}
+
+func slotDelete(id int, db *gorm.DB) bool {
+	var slot models.Slot
+	var booking models.Booking
+
+	//change the availability of the slot to false
+	db.Where("id = ?", id).Find(&slot)
+	slot.Available = false
+	db.Save(&slot)
+
+	//cancel any active booking of that slot and do a 100% reimbursement
+	db.Where("slot_id = ? and status = ?", id, constants.StatusActive).Find(&booking)
+	if booking.ID > 0 {
+		booking.Status = constants.StatusCancelled
+		db.Save(&booking)
+
+		// return the money
+		var user models.User
+		var owner models.Owner
+		var ownerUser models.User
+		db.Where("id = ?", booking.UserID).Find(&user)
+		db.Where("id = ?", booking.OwnerID).Find(&owner)
+		db.Where("id = ?", owner.UserID).Find(&ownerUser)
+
+		user.Wallet = user.Wallet + booking.Price
+		ownerUser.Wallet = ownerUser.Wallet - booking.Price
+
+		db.Save(&user)
+		db.Save(&ownerUser)
+		return true
+	}
+
+	//delete the slot from the database
+	//this actually set the field Deleted_at as the time.now()
+	db.Delete(&slot)
+	return true
+}
+
+func deleteSlot(c *gin.Context) {
+	db := getDB(c)
+	id, _ := strconv.Atoi(c.Params.ByName("slot_id"))
+
+	status := slotDelete(id, db)
+
+	if status == false {
+		c.JSON(204, "No such slot exist")
+		return
+	}
+
+	c.JSON(202, "Successfully deleted")
+}
+
+func spotDelete(id int, db *gorm.DB) bool {
+	var spot models.Spot
+	var slots []models.Slot
+	db.Where("id = ?", id).Find(&spot)
+	db.Where("spot_id = ", id).Find(&slots)
+
+	// Delete all the slots in that spot
+	for _, slot := range slots {
+		slotDelete(int(slot.ID), db)
+	}
+	//delete the spot. Set Deleted at as time.now()
+	db.Delete(&spot)
+	return true
+}
+
+func deleteSpot(c *gin.Context) {
+	db := getDB(c)
+	id, _ := strconv.Atoi(c.Params.ByName("spot_id"))
+
+	status := spotDelete(id, db)
+
+	if status == false {
+		c.JSON(204, "No such Spot exist")
+		return
+	}
+
+	c.JSON(202, "Spot Successfully deleted")
+}
+
+func propertyDelete(id int, db *gorm.DB) bool {
+	var property models.Property
+	var spots []models.Spot
+	db.Where("id = ?", id).Find(&property)
+	db.Where("property_id = ", id).Find(&spots)
+
+	// Delete all the spots in that spot
+	for _, spot := range spots {
+		spotDelete(int(spot.ID), db)
+	}
+	//delete the spot. Set Deleted at as time.now()
+	db.Delete(&property)
+	return true
+}
+
+func deleteProperty(c *gin.Context) {
+	db := getDB(c)
+	id, _ := strconv.Atoi(c.Params.ByName("property_id"))
+
+	status := propertyDelete(id, db)
+
+	if status == false {
+		c.JSON(204, "No such Property exist")
+		return
+	}
+
+	c.JSON(202, "Property Successfully deleted")
 }
 
 func showBookings(c *gin.Context) {
