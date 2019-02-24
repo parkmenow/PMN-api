@@ -456,7 +456,7 @@ func propertyDelete(id int, db *gorm.DB) bool {
 
 	// Delete all the spots in that spot
 	for _, spot := range spots {
-		propertyDelete(int(spot.ID), db)
+		spotDelete(int(spot.ID), db)
 	}
 	//delete the spot. Set Deleted at as time.now()
 	db.Delete(&property)
