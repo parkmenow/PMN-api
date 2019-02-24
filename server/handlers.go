@@ -348,7 +348,7 @@ func cancelBooking(c *gin.Context){
 	var ownerUser models.User
 	db.Where("id=?", booking.OwnerID).Find(&owner)
 	db.Where("id= ?", owner.UserID).Find(&ownerUser)
-	ownerUser.Wallet = ownerUser.Wallet + int64(cancellationPercentage * booking.Price/100)
+	ownerUser.Wallet = ownerUser.Wallet - int64(cancellationPercentage * booking.Price/100)
 	db.Save(&ownerUser)
 
 	// 5) Inform the API saying the task is done, with status code 200 and JSON that booking is cancelled
