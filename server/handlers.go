@@ -310,7 +310,7 @@ func cancelBooking(c *gin.Context){
 	db := getDB(c)
 	// Assuming the id exists
 	db.Where("id=?", bid.BookingId).First(&booking)
-	booking.Status = "cancelled"
+	booking.Status = constants.StatusCancelled
 	db.Save(&booking)
 
 	// 2) Make the slot available now, meaning change the status of the slot to available
@@ -341,14 +341,16 @@ func cancelBooking(c *gin.Context){
 	var user models.User
 	db.Where("id=?", booking.UserID).Find(&user)
 	fmt.Println(user.Wallet)
-	user.Wallet = int64((100-cancellationPercentage) * booking.Price/100)
+	user.Wallet = user.Wallet + int64((100-cancellationPercentage) * booking.Price/100)
 	db.Save(&user)
 
 	// 4) Add 10% of amount to owner of the spot
-	var owner models.User
+	var owner models.Owner
+	var ownerUser models.User
 	db.Where("id=?", booking.OwnerID).Find(&owner)
-	owner.Wallet = int64(cancellationPercentage * booking.Price/100)
-	db.Save(&owner)
+	db.Where("id= ?", owner.UserID).Find(&ownerUser)
+	ownerUser.Wallet = ownerUser.Wallet - int64((100-cancellationPercentage) * booking.Price/100)
+	db.Save(&ownerUser)
 
 	// 5) Inform the API saying the task is done, with status code 200 and JSON that booking is cancelled
 	c.JSON(200, gin.H{"info":"Booking is cancelled",})
@@ -473,4 +475,22 @@ func deleteProperty(c *gin.Context) {
 	}
 
 	c.JSON(200, "Property Successfully deleted")
+}
+
+func showBookings(c *gin.Context) {
+	db := getDB(c)
+	var bookings []models.Booking
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	db.Where("user_id = ? and status = ?", id, constants.StatusActive).Find(&bookings)
+	c.JSON(200, bookings)
+}
+
+func showBookingHistory(c *gin.Context) {
+	db := getDB(c)
+	var bookings []models.Booking
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	db.Where("user_id = ? and status = ?", id, constants.StatusDone).Find(&bookings)
+	c.JSON(200, bookings)
 }
