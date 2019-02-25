@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"googlemaps.github.io/maps"
 )
 
 // DBModel contains basic primary key attribute for most entities
@@ -99,4 +101,9 @@ type Booking struct {
 	SlotID  uint
 	Price   int64
 	Status  string //Can be active, done, cancelled
+}
+
+type GoogleMapresult struct {
+	Results []maps.GeocodingResult
+	Status  string
 }

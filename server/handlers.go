@@ -1,16 +1,23 @@
 package server
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"os"
 	"strconv"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/kr/pretty"
 	"github.com/parkmenow/PMN-api/constants"
 	"github.com/parkmenow/PMN-api/models"
+	"googlemaps.github.io/maps"
 )
 
 // getHello defines the endpoint for initial test
@@ -74,53 +81,35 @@ func fetchParkingSpots(c *gin.Context) {
 
 	db := getDB(c)
 	var properties []models.Property
-	fmt.Println(searchInput.StartTime)
 
-	db.Preload("Spots", "type = ?", searchInput.Type).Preload("Spots.Slots", "start_time = ? AND available = ?", searchInput.StartTime, 1).Find(&properties)
+	db.Preload("Spots", "type = ?", searchInput.Type).Preload("Spots.Slots", "start_time <= ?  AND end_time >= ? AND  available = ?", searchInput.StartTime, searchInput.EndTime, 1).Find(&properties)
 
-	//fmt.Println(searchInput)
-	// layout := "2006-01-02T15:04:05.000Z"
-	// str := searchInput.StartTime[0:10] + "T" + searchInput.StartTime[11:] + ":00.000Z"
-	// startTime, _ := time.Parse(layout, str)
-	// str = searchInput.EndTime[0:10] + "T" + searchInput.EndTime[11:] + ":00.000Z"
-	// endTime, _ := time.Parse(layout, str)
-	// var results []models.Spot
-	// "start_time = ?", searchInput.StartTime
-	// var spots []models.Spot
-	// db.Preload("Slots").Where("type = ?", searchInput.Type).Find(&spots)
-	// var b bool
-	// for _, sp := range spots {
-	// 	b = false
-	// 	var r []models.Slot
-	// 	for _, s := range sp.Slots {
-	// 		str := s.StartTime[0:10] + "T" + s.StartTime[11:] + ":00.000Z"
-	// 		fmt.Println(str)
-	// 		st, _ := time.Parse(layout, str)
-	// 		if st == startTime {
-	// 			b = true
-	// 			r = append(r, s)
-	// 		}
-	// 	}
-	// 	if b {
-	// 		var result models.Spot
-	// 		result.Type = sp.Type
-	// 		result.DBModel = sp.DBModel
-	// 		result.ImageURL = sp.ImageURL
-	// 		result.Description = sp.Description
-	// 		result.PropertyID = sp.PropertyID
-	// 		result.Slots = r
-	// 		results = append(results, result)
-	// 	}
-	// }
-	// var properties []models.Property
-	// for _, res := range results {
-	// 	var property models.Property
-	// 	db.Where("id = ?", res.PropertyID).Find(&property)
-	// 	property.Spots = append(property.Spots, res)
-	// 	properties = append(properties, property)
-	// }
-	//fmt.Println(results)
-	c.JSON(200, properties)
+	radius := searchInput.Radius
+
+	var SearchLocation string
+	if searchInput.SearchByAddress != "Null" {
+		SearchLocation = getLocationByaddress(searchInput.SearchByAddress)
+
+	}
+	if searchInput.SearchByLocation != "Null" {
+		SearchLocation = searchInput.SearchByLocation
+
+	}
+	if searchInput.SearchByUserLocation != "Null" {
+		SearchLocation = searchInput.SearchByUserLocation
+
+	}
+	var newProperties []models.Property
+	fmt.Println(radius)
+
+	for i := 0; i < len(properties); i++ {
+		distance := findDistanceBwtweenTwoloications(properties[i].GpsLocation.Lat, properties[i].GpsLocation.Long, SearchLocation)
+		if distance <= radius {
+			newProperties = append(newProperties, properties[i])
+		}
+	}
+	c.JSON(200, newProperties)
+
 }
 
 //TODO: refactor function name and output string
@@ -146,6 +135,65 @@ func regParkingSpot(c *gin.Context) {
 
 	c.JSON(201, "Listed a new parking Spot Successfully!")
 
+}
+
+//find driving distancebetween two locations
+func findDistanceBwtweenTwoloications(propertySpotLat float64, propertySpotLong float64, SearchLocation string) int {
+
+	spotLocation := FloatToString(propertySpotLat) + "," + FloatToString(propertySpotLong)
+	googleKey := os.Getenv("MAPS_KEY")
+	c, err := maps.NewClient(maps.WithAPIKey(googleKey))
+	if err != nil {
+		log.Fatalf("fatal error: %s", err)
+	}
+	r := &maps.DirectionsRequest{
+		Origin:      SearchLocation,
+		Destination: spotLocation,
+	}
+	r.Mode = maps.TravelModeDriving
+	r.Units = maps.UnitsMetric
+	route, _, err := c.Directions(context.Background(), r)
+	if err != nil {
+		log.Fatalf("fatal error: %s", err)
+	}
+	pretty.Println(route[0].Legs[0].Distance.Meters / 1000)
+	distance := route[0].Legs[0].Distance.Meters / 1000
+	return distance
+
+}
+
+// it is function to  convert from float to string
+func FloatToString(input_num float64) string {
+	// to convert a float number to a string
+	return strconv.FormatFloat(input_num, 'f', 6, 64)
+}
+
+//get the location from address
+func getLocationByaddress(searchLocationAddress string) string {
+	url := "https://maps.googleapis.com/maps/api/geocode/json?address=" + searchLocationAddress + "&key=" + os.Getenv("MAPS_KEY")
+
+	var client http.Client
+	resp, err := client.Get(url)
+	if err != nil {
+		// err
+	}
+	defer resp.Body.Close()
+
+	foo1 := new(models.GoogleMapresult)
+	var searchLoc string
+
+	if resp.StatusCode == http.StatusOK {
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+
+		//bodyString := string(bodyBytes)
+		//fmt.Println(bodyBytes)
+		fmt.Println(".........//////////////**********")
+		err := json.Unmarshal(bodyBytes, foo1)
+		fmt.Println(err)
+		fmt.Println(foo1.Results[0].Geometry.Location)
+		searchLoc = FloatToString(foo1.Results[0].Geometry.Location.Lat) + "," + FloatToString(foo1.Results[0].Geometry.Location.Lng)
+	}
+	return searchLoc
 }
 
 func regSpot(c *gin.Context) {
@@ -297,7 +345,7 @@ func modifySpot(c *gin.Context) {
 
 }
 
-func cancelBooking(c *gin.Context){
+func cancelBooking(c *gin.Context) {
 	// 1) Get the booking id and corresponding row of that booking
 	type BID struct {
 		// Booking Id
@@ -326,22 +374,22 @@ func cancelBooking(c *gin.Context){
 	// If it is less than 24 hours, cancellation is 10 % charge
 	var cancellationPercentage int64
 	hoursLeft := slot.StartTime.Sub(time.Now()).Hours()
-	if hoursLeft > 48{
+	if hoursLeft > 48 {
 		cancellationPercentage = 0
-	}else if hoursLeft<48 && hoursLeft >24{
+	} else if hoursLeft < 48 && hoursLeft > 24 {
 		cancellationPercentage = 5
 
-	}else if hoursLeft < 24 && hoursLeft > 0{
+	} else if hoursLeft < 24 && hoursLeft > 0 {
 		cancellationPercentage = 10
-	}else if hoursLeft < 0{
-		c.JSON(200, gin.H{"info":"Booking cannot be cancelled, as time passed the start time",})
+	} else if hoursLeft < 0 {
+		c.JSON(200, gin.H{"info": "Booking cannot be cancelled, as time passed the start time"})
 	}
 
 	// 3) Deduct 10% of price user has paid to his booking, so add 90% of price to his wallet, tested user gets money into his account
 	var user models.User
 	db.Where("id=?", booking.UserID).Find(&user)
 	fmt.Println(user.Wallet)
-	user.Wallet = user.Wallet + int64((100-cancellationPercentage) * booking.Price/100)
+	user.Wallet = user.Wallet + int64((100-cancellationPercentage)*booking.Price/100)
 	db.Save(&user)
 
 	// 4) Add 10% of amount to owner of the spot
@@ -349,14 +397,13 @@ func cancelBooking(c *gin.Context){
 	var ownerUser models.User
 	db.Where("id=?", booking.OwnerID).Find(&owner)
 	db.Where("id= ?", owner.UserID).Find(&ownerUser)
-	ownerUser.Wallet = ownerUser.Wallet - int64((100-cancellationPercentage) * booking.Price/100)
+	ownerUser.Wallet = ownerUser.Wallet - int64((100-cancellationPercentage)*booking.Price/100)
 	db.Save(&ownerUser)
 
 	// 5) Inform the API saying the task is done, with status code 200 and JSON that booking is cancelled
-	c.JSON(200, gin.H{"info":"Booking is cancelled",})
+	c.JSON(200, gin.H{"info": "Booking is cancelled"})
 
 }
-
 
 func modifySlot(c *gin.Context) {
 	var slot models.Slot
