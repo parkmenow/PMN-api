@@ -87,15 +87,15 @@ func fetchParkingSpots(c *gin.Context) {
 	radius := searchInput.Radius
 
 	var SearchLocation string
-	if searchInput.SearchByAddress != "Null" {
+	if searchInput.SearchByAddress != "" {
 		SearchLocation = getLocationByaddress(searchInput.SearchByAddress)
 
 	}
-	if searchInput.SearchByLocation != "Null" {
+	if searchInput.SearchByLocation != "" {
 		SearchLocation = searchInput.SearchByLocation
 
 	}
-	if searchInput.SearchByUserLocation != "Null" {
+	if searchInput.SearchByUserLocation != "" {
 		SearchLocation = searchInput.SearchByUserLocation
 
 	}
