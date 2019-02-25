@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
@@ -309,7 +310,7 @@ func cancelBooking(c *gin.Context){
 	db := getDB(c)
 	// Assuming the id exists
 	db.Where("id=?", bid.BookingId).First(&booking)
-	booking.Status = "cancelled"
+	booking.Status = constants.StatusCancelled
 	db.Save(&booking)
 
 	// 2) Make the slot available now, meaning change the status of the slot to available
@@ -340,14 +341,16 @@ func cancelBooking(c *gin.Context){
 	var user models.User
 	db.Where("id=?", booking.UserID).Find(&user)
 	fmt.Println(user.Wallet)
-	user.Wallet = int64((100-cancellationPercentage) * booking.Price/100)
+	user.Wallet = user.Wallet + int64((100-cancellationPercentage) * booking.Price/100)
 	db.Save(&user)
 
 	// 4) Add 10% of amount to owner of the spot
-	var owner models.User
+	var owner models.Owner
+	var ownerUser models.User
 	db.Where("id=?", booking.OwnerID).Find(&owner)
-	owner.Wallet = int64(cancellationPercentage * booking.Price/100)
-	db.Save(&owner)
+	db.Where("id= ?", owner.UserID).Find(&ownerUser)
+	ownerUser.Wallet = ownerUser.Wallet - int64((100-cancellationPercentage) * booking.Price/100)
+	db.Save(&ownerUser)
 
 	// 5) Inform the API saying the task is done, with status code 200 and JSON that booking is cancelled
 	c.JSON(200, gin.H{"info":"Booking is cancelled",})
@@ -365,4 +368,129 @@ func modifySlot(c *gin.Context) {
 	c.JSON(200, "Successfully Modified Spot")
 }
 
-// user.PATCH("/:id/listings/modifySlot", modifySlot)
+func slotDelete(id int, db *gorm.DB) bool {
+	var slot models.Slot
+	var booking models.Booking
+
+	//change the availability of the slot to false
+	db.Where("id = ?", id).Find(&slot)
+	slot.Available = false
+	db.Save(&slot)
+
+	//cancel any active booking of that slot and do a 100% reimbursement
+	db.Where("slot_id = ? and status = ?", id, constants.StatusActive).Find(&booking)
+	if booking.ID > 0 {
+		booking.Status = constants.StatusCancelled
+		db.Save(&booking)
+
+		// return the money
+		var user models.User
+		var owner models.Owner
+		var ownerUser models.User
+		db.Where("id = ?", booking.UserID).Find(&user)
+		db.Where("id = ?", booking.OwnerID).Find(&owner)
+		db.Where("id = ?", owner.UserID).Find(&ownerUser)
+
+		user.Wallet = user.Wallet + booking.Price
+		ownerUser.Wallet = ownerUser.Wallet - booking.Price
+
+		db.Save(&user)
+		db.Save(&ownerUser)
+		return true
+	}
+
+	//delete the slot from the database
+	//this actually set the field Deleted_at as the time.now()
+	db.Delete(&slot)
+	return true
+}
+
+func deleteSlot(c *gin.Context) {
+	db := getDB(c)
+	id, _ := strconv.Atoi(c.Params.ByName("slot_id"))
+
+	status := slotDelete(id, db)
+
+	if status == false {
+		c.JSON(204, "No such slot exist")
+		return
+	}
+
+	c.JSON(202, "Successfully deleted")
+}
+
+func spotDelete(id int, db *gorm.DB) bool {
+	var spot models.Spot
+	var slots []models.Slot
+	db.Where("id = ?", id).Find(&spot)
+	db.Where("spot_id = ", id).Find(&slots)
+
+	// Delete all the slots in that spot
+	for _, slot := range slots {
+		slotDelete(int(slot.ID), db)
+	}
+	//delete the spot. Set Deleted at as time.now()
+	db.Delete(&spot)
+	return true
+}
+
+func deleteSpot(c *gin.Context) {
+	db := getDB(c)
+	id, _ := strconv.Atoi(c.Params.ByName("spot_id"))
+
+	status := spotDelete(id, db)
+
+	if status == false {
+		c.JSON(204, "No such Spot exist")
+		return
+	}
+
+	c.JSON(202, "Spot Successfully deleted")
+}
+
+func propertyDelete(id int, db *gorm.DB) bool {
+	var property models.Property
+	var spots []models.Spot
+	db.Where("id = ?", id).Find(&property)
+	db.Where("property_id = ", id).Find(&spots)
+
+	// Delete all the spots in that spot
+	for _, spot := range spots {
+		spotDelete(int(spot.ID), db)
+	}
+	//delete the spot. Set Deleted at as time.now()
+	db.Delete(&property)
+	return true
+}
+
+func deleteProperty(c *gin.Context) {
+	db := getDB(c)
+	id, _ := strconv.Atoi(c.Params.ByName("property_id"))
+
+	status := propertyDelete(id, db)
+
+	if status == false {
+		c.JSON(204, "No such Property exist")
+		return
+	}
+
+	c.JSON(202, "Property Successfully deleted")
+}
+
+func showBookings(c *gin.Context) {
+	db := getDB(c)
+	var bookings []models.Booking
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	db.Where("user_id = ? and status = ?", id, constants.StatusActive).Find(&bookings)
+	c.JSON(200, bookings)
+}
+
+func showBookingHistory(c *gin.Context) {
+	db := getDB(c)
+	var bookings []models.Booking
+	claims := jwt.ExtractClaims(c)
+	id := claims["id"]
+	db.Where("user_id = ? and status = ?", id, constants.StatusDone).Find(&bookings)
+	c.JSON(200, bookings)
+}
