@@ -50,10 +50,10 @@ type GpsLocation struct {
 // Property represents a single property owned by a owner
 type Property struct {
 	DBModel
-	Address // TODO: Once requirements are satisfied, then change this
+	Address     // TODO: Once requirements are satisfied, then change this
 	GpsLocation // TODO: Once requirements are satisfied, then change this
-	Spots   []Spot
-	OwnerID uint
+	Spots       []Spot
+	OwnerID     uint
 }
 
 // Spot represent individual parking pots that can be sublet
@@ -85,6 +85,10 @@ type SearchInput struct {
 	StartTime time.Time `gorm:"type:timestamp with time zone"`
 	EndTime   time.Time `gorm:"type:timestamp with time zone"`
 	GpsLocation
+	Radius               int
+	SearchByLocation     string
+	SearchByUserLocation string
+	SearchByAddress      string
 }
 
 // Booking is
@@ -94,5 +98,5 @@ type Booking struct {
 	OwnerID uint
 	SlotID  uint
 	Price   int64
-	Status string //Can be active, done, cancelled
+	Status  string //Can be active, done, cancelled
 }
