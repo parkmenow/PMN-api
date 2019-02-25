@@ -31,6 +31,7 @@ func userRegistration(c *gin.Context) {
 	if checkUser.UName != "" {
 		c.JSON(409, "User Already Exists")
 	} else {
+		newuser.Wallet = 1000
 		db.Create(&newuser)
 		c.JSON(201, "User added successfully!")
 	}
