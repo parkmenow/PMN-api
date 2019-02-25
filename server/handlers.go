@@ -72,11 +72,13 @@ func fetchParkingSpots(c *gin.Context) {
 	var searchInput models.SearchInput
 	c.BindJSON(&searchInput)
 
+	fmt.Println(searchInput)
+
 	db := getDB(c)
 	var properties []models.Property
 	fmt.Println(searchInput.StartTime)
 
-	db.Preload("Spots", "type = ?", searchInput.Type).Preload("Spots.Slots", "start_time = ? AND available = ?", searchInput.StartTime, 1).Find(&properties)
+	db.Preload("Spots", "type = ?", searchInput.Type).Preload("Spots.Slots", "start_time = ? AND available = ?", searchInput.StartTime, true).Find(&properties)
 
 	//fmt.Println(searchInput)
 	// layout := "2006-01-02T15:04:05.000Z"
