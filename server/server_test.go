@@ -31,8 +31,15 @@ func performRequest(r http.Handler, method, path string, body io.Reader) *httpte
 
 	// Create a Bearer string by appending string access token, adding a bearer token for checking the authentication
 	// We have created a token for user: test3, pass: test3, token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzA3Mzg1OTAsImlkIjozLCJvcmlnX2lhdCI6MTU1MDczODU5MH0.AwyBaGE31Yq2dURoP7uIe91zIQwHlTkkYW6a2kLoVa8
-	var bearer = "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzA3Mzg1OTAsImlkIjozLCJvcmlnX2lhdCI6MTU1MDczODU5MH0.AwyBaGE31Yq2dURoP7uIe91zIQwHlTkkYW6a2kLoVa8"
-	req.Header.Add("Authorization", bearer)
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+    bearer_key:= os.Getenv("BEARER_KEY")
+
+    //var bearer = "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzA3Mzg1OTAsImlkIjozLCJvcmlnX2lhdCI6MTU1MDczODU5MH0.AwyBaGE31Yq2dURoP7uIe91zIQwHlTkkYW6a2kLoVa8"
+	var bearer = "Bearer "+ bearer_key
+    req.Header.Add("Authorization", bearer)
 
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
@@ -53,6 +60,7 @@ var _ = Describe("Server", func() {
 	}
 	driver := os.Getenv("DB_DRIVER")
 	url := os.Getenv("DATABASE_URL")
+
 
 	BeforeEach(func() {
 
