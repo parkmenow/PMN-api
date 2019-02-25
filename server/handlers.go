@@ -280,6 +280,7 @@ func paymentByWallet(c *gin.Context) {
 		OwnerID: property.OwnerID,
 		SlotID:  input.SlotID,
 		Price:   int64(input.Price),
+		Status: constants.StatusActive,
 	}
 	db.Create(&newBooking)
 	c.JSON(202, "Booked Successfully!")
