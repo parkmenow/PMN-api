@@ -374,7 +374,15 @@ func showBookings(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	id := claims["id"]
 	db.Where("user_id = ? and status = ?", id, constants.StatusActive).Find(&bookings)
-	c.JSON(200, bookings)
+	var slots []models.Slot
+	if len(bookings) > 0 {
+		for _, booking := range bookings {
+			var slot models.Slot
+			db.Where("id=?", booking.SlotID).Find(&slot)
+			slots = append(slots, slot)
+		}
+	}
+	c.JSON(200, slots)
 }
 
 func showBookingHistory(c *gin.Context) {
