@@ -7,8 +7,8 @@
     "Available": true
   },
   {
-    "StartTime": "2019-02-25T20:00:00.000Z",
-    "EndTime": "2019-02-25T21:00:00.000Z",
+    "StartTime": "2019-02-25T21:00:00.000Z",
+    "EndTime": "2019-02-25T23:00:00.000Z",
     "Price": 100,
     "SpotID": 2,
     "Available": true
@@ -37,6 +37,13 @@
   {
     "StartTime": "2019-02-25T19:00:00.000Z",
     "EndTime": "2019-02-25T20:00:00.000Z",
+    "Price": 100,
+    "SpotID": 4,
+    "Available": true
+  },
+  {
+    "StartTime": "2019-02-25T10:00:00.000Z",
+    "EndTime": "2019-02-25T18:00:00.000Z",
     "Price": 100,
     "SpotID": 4,
     "Available": true
