@@ -28,16 +28,19 @@ import (
 // performRequest performs a http request and returns the response
 func performRequest(r http.Handler, method, path string, body io.Reader, ch chan *httptest.ResponseRecorder  )  {
 	req, _ := http.NewRequest(method, path, body)
-
 	// Create a Bearer string by appending string access token, adding a bearer token for checking the authentication
-	// We have created a token for user: test3, pass: test3, token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzA3Mzg1OTAsImlkIjozLCJvcmlnX2lhdCI6MTU1MDczODU5MH0.AwyBaGE31Yq2dURoP7uIe91zIQwHlTkkYW6a2kLoVa8
-	var bearer = "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzA3Mzg1OTAsImlkIjozLCJvcmlnX2lhdCI6MTU1MDczODU5MH0.AwyBaGE31Yq2dURoP7uIe91zIQwHlTkkYW6a2kLoVa8"
+	// We have created a token for user: test3, pass: test3,
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	token := os.Getenv("TOKEN")
+	var bearer = "Bearer " + token
 	req.Header.Add("Authorization", bearer)
 
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	ch <- w
-
 }
 
 var _ = Describe("Server", func() {
@@ -46,7 +49,6 @@ var _ = Describe("Server", func() {
 		db       *gorm.DB
 		router   *gin.Engine
 		response *httptest.ResponseRecorder
-
 	)
 	err := godotenv.Load("../.env")
 	if err != nil {
@@ -56,16 +58,12 @@ var _ = Describe("Server", func() {
 	url := os.Getenv("DATABASE_URL")
 
 	BeforeEach(func() {
-
 		d, err := gorm.Open(driver, url)
 		db = d
 		if err != nil {
 			panic(err)
 		}
-
 		router = CreateRouter(db)
-
-
 	})
 
 	AfterEach(func() {
@@ -90,7 +88,7 @@ var _ = Describe("Server", func() {
 				Expect(response.Body.String()).To(Equal("Hello World"))
 			})
 		})
-fmt.Println("-----First--------")
+
 		// TODO: Needs to fix this.
 		/*
 		Describe("API /login", func() {
@@ -108,7 +106,6 @@ fmt.Println("-----First--------")
 
 		})
 		*/
-
 
 		Describe("API /dashboard/:id/", func() {
 			BeforeEach(func() {
@@ -129,7 +126,7 @@ fmt.Println("-----First--------")
 			})
 
 		})
-		fmt.Println("-----second--------")
+
 		Describe("API /dashboard/:id/mylistings", func() {
 			BeforeEach(func() {
 				body := new(bytes.Buffer)
@@ -145,7 +142,7 @@ fmt.Println("-----First--------")
 			})
 
 		})
-		fmt.Println("-----third--------")
+
 		Describe("API /dashboard/:id/parkmenow", func() {
 			BeforeEach(func() {
 				body := new(bytes.Buffer)
@@ -167,8 +164,6 @@ fmt.Println("-----First--------")
 			})
 
 		})
-		fmt.Println("-----fourth--------")
-
 
 		Describe("API /dashboard/:id/regparking", func() {
 			BeforeEach(func() {
@@ -204,15 +199,3 @@ fmt.Println("-----First--------")
 
 })
 
-// sign up user testing
-var jsonSignUp = `{
-	"FName": "ssssss",
-	"LName": "pppppp",
-	"UName": "subodh101",
-	"Password": "password",
-	"Email": "subodh.pushkar@gmail.com",
-	"PhoneNo": "9911991199",
-	"Line1" : "1-5-5, 1108",
-	"Line2" : "Higashi-ojima",
-	"Pincode": "132-0034"
-}`
