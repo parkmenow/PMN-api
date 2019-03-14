@@ -3,7 +3,6 @@ package server_test
 import (
 	"bytes"
 	"fmt"
-
 	//"github.com/parkmenow/PMN-api/models"
 	"io"
 
@@ -25,8 +24,9 @@ import (
 	. "github.com/parkmenow/PMN-api/server"
 )
 
+
 // performRequest performs a http request and returns the response
-func performRequest(r http.Handler, method, path string, body io.Reader) *httptest.ResponseRecorder {
+func performRequest(r http.Handler, method, path string, body io.Reader, ch chan *httptest.ResponseRecorder  )  {
 	req, _ := http.NewRequest(method, path, body)
 
 	// Create a Bearer string by appending string access token, adding a bearer token for checking the authentication
@@ -36,7 +36,8 @@ func performRequest(r http.Handler, method, path string, body io.Reader) *httpte
 
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
-	return w
+	ch <- w
+
 }
 
 var _ = Describe("Server", func() {
@@ -63,6 +64,8 @@ var _ = Describe("Server", func() {
 		}
 
 		router = CreateRouter(db)
+
+
 	})
 
 	AfterEach(func() {
@@ -73,7 +76,10 @@ var _ = Describe("Server", func() {
 		Describe("The / endpoint or helloworld", func() {
 			BeforeEach(func() {
 				var body=new(bytes.Buffer)
-				response = performRequest(router, "GET", "/",body)
+				ch1 := make(chan *httptest.ResponseRecorder)
+				go performRequest(router, "GET", "/",body, ch1)
+				response =  <- ch1
+
 			})
 
 			It("Returns with Status 200", func() {
@@ -84,7 +90,7 @@ var _ = Describe("Server", func() {
 				Expect(response.Body.String()).To(Equal("Hello World"))
 			})
 		})
-
+fmt.Println("-----First--------")
 		// TODO: Needs to fix this.
 		/*
 		Describe("API /login", func() {
@@ -107,7 +113,9 @@ var _ = Describe("Server", func() {
 		Describe("API /dashboard/:id/", func() {
 			BeforeEach(func() {
 				body := new(bytes.Buffer)
-				response = performRequest(router, "GET", "/dashboard/1/", body)
+				ch1 := make(chan *httptest.ResponseRecorder)
+				go performRequest(router, "GET", "/dashboard/1/", body, ch1)
+				response = <- ch1
 				fmt.Println((response.Body.String()))
 				//bytes.NewBuffer([]byte(body))
 			})
@@ -115,16 +123,19 @@ var _ = Describe("Server", func() {
 			It("Returns with Status 200", func() {
 				Expect(response.Code).To(Equal(200))
 			})
+
 			It("Returns with Output 'Bharath'", func() {
 				Expect(response.Body.String()).To(Equal("\"Bharath\""))
 			})
 
 		})
-
+		fmt.Println("-----second--------")
 		Describe("API /dashboard/:id/mylistings", func() {
 			BeforeEach(func() {
 				body := new(bytes.Buffer)
-				response = performRequest(router, "GET", "/dashboard/1/mylistings", body)
+				ch1 := make(chan *httptest.ResponseRecorder)
+				go performRequest(router, "GET", "/dashboard/1/mylistings", body, ch1)
+				response = <- ch1
 				fmt.Println((response.Body.String()))
 				//bytes.NewBuffer([]byte(body))
 			})
@@ -134,7 +145,7 @@ var _ = Describe("Server", func() {
 			})
 
 		})
-
+		fmt.Println("-----third--------")
 		Describe("API /dashboard/:id/parkmenow", func() {
 			BeforeEach(func() {
 				body := new(bytes.Buffer)
@@ -145,8 +156,9 @@ var _ = Describe("Server", func() {
     								"StartTime" : "2006-01-02T14:00:00.000Z",
 									"EndTime" : "2006-01-02T15:00:00.000Z"
 									}`))
-
-				response = performRequest(router, "POST", "/dashboard/1/parkmenow", body)
+				ch1 := make(chan *httptest.ResponseRecorder)
+				go performRequest(router, "POST", "/dashboard/1/parkmenow", body, ch1)
+				response = <- ch1
 				fmt.Println((response.Body.String()))
 			})
 
@@ -155,6 +167,8 @@ var _ = Describe("Server", func() {
 			})
 
 		})
+		fmt.Println("-----fourth--------")
+
 
 		Describe("API /dashboard/:id/regparking", func() {
 			BeforeEach(func() {
@@ -168,8 +182,9 @@ var _ = Describe("Server", func() {
        							 "OwnerID": 3
     								}
 								`))
-
-				response = performRequest(router, "POST", "/dashboard/1/regparking", body)
+				var ch1 = make(chan *httptest.ResponseRecorder)
+				go performRequest(router, "POST", "/dashboard/1/regparking", body,ch1)
+				response = <- ch1
 				fmt.Println((response.Body.String()))
 			})
 
